@@ -84,9 +84,14 @@ def make_ridge_plot(data: pd.DataFrame):
     return g
 
 
+def make_line_plot(data: pd.DataFrame):
+    sns.lineplot(data=data, x='center_locus', y='intensity', hue='molid')
+
+
 if __name__ == "__main__":
     filename = pathlib.Path("resources/chr23 between 18532000 to 19532000.BEDgraph")
     data = read_bedgraph_with_mol_name(filename)
     data = add_center_locus(data)
-    make_ridge_plot(data)
+    # make_ridge_plot(data)
+    make_line_plot(data)
     plt.show(block=False)
