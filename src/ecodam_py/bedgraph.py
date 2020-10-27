@@ -23,7 +23,7 @@ class BedGraph:
         """
         self.file = file
         self.data = pd.read_csv(file, sep='\t')
-        self.data.columns = data.columns.str.replace(" ", "_").str.lower()
+        self.data.columns = self.data.columns.str.replace(" ", "_").str.lower()
  
     def add_center_locus(self):
         """Adds a center point to each segment of a molecule.
@@ -36,13 +36,17 @@ class BedGraph:
         ) / 2
 
     def convert_df_to_da(self):
-        """Create a more complex representation of the track as an 
+        """Create a more complex representation of the tracks as an 
         xr.DataArray.
 
+        The array is a two dimensional array with coordinates that denote the
+        molecule name and its brightness at any given locus.
 
+        The method creates a new self.dataarray attribute which contains this
+        DataArray.
         """
         mol_ids = self.data['molid'].unique()
-        loci = np.unique(np.concatenate([self.data['start_locus'].unique(),self.data['end_locus'].unique()]))
+        loci = np.unique(np.concatenate([self.data['start_locus'].unique(), self.data['end_locus'].unique()]))
         loci.sort()
         coords = {'molID': mol_ids, 'locus': loci}
         attrs = {'chr': self.data.loc[0, 'chromosome']}
@@ -51,14 +55,16 @@ class BedGraph:
         self.dataarary = self._populate_da_with_intensity(da)
 
     def _populate_da_with_intensity(self, da: xr.DataArray):
-        """Iterate over the initial BedGraph and populate an array with its
+        """Iterate over the initial DA and populate an array with its
         intensity values.
 
-        The new array will have coordinates that correspond to the different
-        molecules that compose of the BedGraph tracks.
+        The method also normalizes the intensity counts so that the recorded
+        value is the average of the new value and the previous one.
         """
         for row in self.data.itertuples(index=False, name=None):
-            print(row)
-            break
+            da.loc[row[0], row[2]:row[3]] = (da.loc[row[0], row[2]:row[3]] + row[4]) / 2
+        return da
+
+
 
 

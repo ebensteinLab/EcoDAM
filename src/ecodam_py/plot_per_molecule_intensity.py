@@ -50,12 +50,16 @@ def make_line_plot(data: pd.DataFrame):
     sns.lineplot(data=data, x='center_locus', y='intensity', hue='molid')
 
 
+def show_da_as_img(bg: BedGraph):
+    fig = px.imshow(bg.dataarary)
+    return fig
+
 
 if __name__ == "__main__":
     filename = pathlib.Path("resources/chr23 between 18532000 to 19532000.BEDgraph")
     bed = BedGraph(filename)
     bed.add_center_locus()
-    # make_ridge_plot(data)
-    # make_line_plot(data)
     bed.convert_df_to_da()
-    plt.show(block=False)
+    fig = show_da_as_img(bed)
+    fig.show()
+
