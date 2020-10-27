@@ -51,12 +51,12 @@ def make_line_plot(data: pd.DataFrame):
 
 
 def show_da_as_img(bg: BedGraph):
-    fig = px.imshow(bg.dataarary)
+    fig = px.imshow(bg.dataarray, color_continuous_scale='RdBu_r', origin='lower')
     return fig
 
 
 if __name__ == "__main__":
-    filename = pathlib.Path("resources/chr23 between 18532000 to 19532000.BEDgraph")
+    filename = pathlib.Path("tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph")
     bed = BedGraph(filename)
     bed.add_center_locus()
     bed.convert_df_to_da()
