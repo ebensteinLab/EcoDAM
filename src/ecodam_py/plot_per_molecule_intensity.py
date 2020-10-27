@@ -1,8 +1,11 @@
 import pathlib
 
+import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import xarray as xr
+import plotly.express as px
 
 
 def read_bedgraph_with_mol_name(file: pathlib.Path) -> pd.DataFrame:
@@ -88,10 +91,23 @@ def make_line_plot(data: pd.DataFrame):
     sns.lineplot(data=data, x='center_locus', y='intensity', hue='molid')
 
 
+def convert_df_to_da(data: pd.DataFrame) -> xr.DataArray:
+    mol_ids = data['molid'].unique()
+    loci = np.unique(np.concatenate([data['start_locus'].unique(),data['end_locus'].unique()]))
+    loci.sort()
+    coords = {'molID': mol_ids, 'locus': loci}
+    attrs = {'chr': data.loc[0, 'chromosome']}
+    dims = ['molID', 'locus']
+    da = xr.DataArray(np.zeros((len(coords['molID']), len(coords['locus']))), dims=dims, coords=coords, attrs=attrs)
+    da = _populate_da_with_intensity(da, data)
+    return da
+
+
 if __name__ == "__main__":
     filename = pathlib.Path("resources/chr23 between 18532000 to 19532000.BEDgraph")
     data = read_bedgraph_with_mol_name(filename)
     data = add_center_locus(data)
     # make_ridge_plot(data)
-    make_line_plot(data)
+    # make_line_plot(data)
+    data = convert_df_to_da(data)
     plt.show(block=False)
