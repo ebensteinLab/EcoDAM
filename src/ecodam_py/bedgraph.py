@@ -58,6 +58,7 @@ class BedGraph:
         molecules that compose of the BedGraph tracks.
         """
         for row in self.data.itertuples(index=False, name=None):
-            pass
+            print(row)
+            break
 
 
