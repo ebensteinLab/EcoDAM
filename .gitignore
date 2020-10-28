@@ -131,3 +131,4 @@ dmypy.json
 resources/
 *.html
 .vim/
+*.csv
