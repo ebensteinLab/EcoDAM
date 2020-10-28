@@ -78,6 +78,7 @@ class BedGraph:
             attrs=attrs,
         )
         self.dataarray = self._populate_da_with_intensity(da)
+        self.dataarray.values[self.dataarray.values == 0] = np.nan
 
     def _populate_da_with_intensity(self, da: xr.DataArray):
         """Iterate over the initial DA and populate an array with its

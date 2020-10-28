@@ -6,6 +6,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import xarray as xr
 import plotly.express as px
+import chart_studio.plotly as py
 
 from ecodam_py.bedgraph import BedGraph
 
@@ -51,7 +52,7 @@ def make_line_plot(data: pd.DataFrame):
 
 
 def show_da_as_img(bg: BedGraph):
-    fig = px.imshow(bg.dataarray, color_continuous_scale='RdBu_r', origin='lower')
+    fig = px.imshow(bg.dataarray, color_continuous_scale='cividis', origin='lower', range_color=(0, np.nanmax(bg.dataarray.values) * 0.1))
     return fig
 
 

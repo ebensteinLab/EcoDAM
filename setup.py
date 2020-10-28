@@ -42,6 +42,7 @@ INSTALL_REQUIRES = [
     'seaborn',
     'xarray',
     'pyarrow',
+    'chart_studio',
 ]
 
 ###################################################################
