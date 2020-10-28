@@ -40,6 +40,7 @@ INSTALL_REQUIRES = [
     'matplotlib',
     'plotly',
     'seaborn',
+    'xarray',
 ]
 
 ###################################################################
