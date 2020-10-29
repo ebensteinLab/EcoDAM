@@ -43,6 +43,7 @@ INSTALL_REQUIRES = [
     'xarray',
     'pyarrow',
     'chart_studio',
+    'gffutils',
 ]
 
 ###################################################################
