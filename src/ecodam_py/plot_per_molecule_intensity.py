@@ -1,41 +1,47 @@
 import pathlib
+import itertools
 
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import xarray as xr
 import plotly.express as px
-import chart_studio.plotly as py
 
 from ecodam_py.bedgraph import BedGraph
 
 
-
 def label(x, color, label):
     ax = plt.gca()
-    ax.text(0, .2, label, fontweight="bold", color=color,
-            ha="left", va="center", transform=ax.transAxes)
+    ax.text(
+        0,
+        0.2,
+        label,
+        fontweight="bold",
+        color=color,
+        ha="left",
+        va="center",
+        transform=ax.transAxes,
+    )
 
 
 def make_ridge_plot(data: pd.DataFrame):
     pal = sns.cubehelix_palette(10, rot=-0.25, light=0.7)
     g = sns.FacetGrid(
-        data, row="molid", hue="molid", aspect=15, height=0.5, palette=pal
+        data, row="molid", hue="molid", aspect=25, height=0.5, palette=pal
     )
 
     g.map(
         sns.kdeplot,
-        "center_locus",
+        "center_locus", "intensity",
         bw_adjust=0.5,
         clip_on=False,
         fill=True,
         alpha=1,
         linewidth=1.5,
     )
-    g.map(sns.kdeplot, "center_locus", clip_on=False, color="w", lw=2, bw_adjust=0.5)
+    g.map(sns.kdeplot, "center_locus", "intensity", clip_on=False, color="w", lw=2, bw_adjust=0.5)
     g.map(plt.axhline, y=0, lw=2, clip_on=False)
-    g.map(label, "center_locus")
+    g.map(label, "molid")
 
     # Set the subplots to overlap
     g.fig.subplots_adjust(hspace=-.25)
@@ -48,19 +54,59 @@ def make_ridge_plot(data: pd.DataFrame):
 
 
 def make_line_plot(data: pd.DataFrame):
-    sns.lineplot(data=data, x='center_locus', y='intensity', hue='molid')
+    molid = data['molid'].unique()
+    offset = np.arange(len(molid)) * 180
+    mapping = dict(zip(molid, offset))
+    data['added'] = data['molid'].map(mapping)
+    data['intensity'] += data['added']
+    data['molid'] = data['molid'].astype(np.dtype('<U15'))
+    fig, ax = plt.subplots()
+    sns.lineplot(data=data, x="center_locus", y="intensity", hue="molid")
 
 
 def show_da_as_img(bg: BedGraph):
-    fig = px.imshow(bg.dataarray, color_continuous_scale='cividis', origin='lower', range_color=(0, np.nanmax(bg.dataarray.values) * 0.1))
+    fig = px.imshow(
+        bg.dataarray,
+        color_continuous_scale="cividis",
+        origin="lower",
+        range_color=(0, np.nanmax(bg.dataarray.values) * 0.1),
+    )
     return fig
 
 
+def pairwise(iterable):
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return zip(a, b)
+
+
+def show_da_as_tracks(bg: BedGraph):
+    num_mols = len(bg.dataarray)
+    num_of_tracks_per_plot = 10
+    groups = np.linspace(
+        0, num_mols, num_of_tracks_per_plot, dtype=np.int64, endpoint=True
+    )
+    molids = bg.data.loc[:, "molid"].unique()
+    data = bg.data.set_index("molid")
+    print(groups)
+    for start, end in pairwise(groups):
+        current_molids = molids[start:end]
+        print(current_molids)
+        current_data = data.loc[current_molids, :].reset_index()
+        make_line_plot(current_data)
+        plt.show(block=False)
+    return current_data
+
+
 if __name__ == "__main__":
-    filename = pathlib.Path("tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph")
+    filename = pathlib.Path(
+        "tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph"
+    )
     bed = BedGraph(filename)
     bed.add_center_locus()
     bed.convert_df_to_da()
-    fig = show_da_as_img(bed)
-    fig.show()
-
+    # fig = show_da_as_img(bed)
+    # fig.show()
+    current_data = show_da_as_tracks(bed)
+    # plt.show(block=False)
