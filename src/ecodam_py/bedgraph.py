@@ -92,3 +92,7 @@ class BedGraph:
                 da.loc[row[-2], row[2] : row[3]] + row[4]
             ) / 2
         return da
+
+
+if __name__ == '__main__':
+    bed = BedGraph('tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph')
