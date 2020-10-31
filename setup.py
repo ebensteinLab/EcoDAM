@@ -44,6 +44,7 @@ INSTALL_REQUIRES = [
     'pyarrow',
     'chart_studio',
     'gffutils',
+    'magicgui',
 ]
 
 ###################################################################

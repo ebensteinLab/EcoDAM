@@ -6,6 +6,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
+from magicgui import magicgui, event_loop
 
 from ecodam_py.bedgraph import BedGraph
 
@@ -32,19 +33,28 @@ def make_ridge_plot(data: pd.DataFrame):
 
     g.map(
         sns.kdeplot,
-        "center_locus", "intensity",
+        "center_locus",
+        "intensity",
         bw_adjust=0.5,
         clip_on=False,
         fill=True,
         alpha=1,
         linewidth=1.5,
     )
-    g.map(sns.kdeplot, "center_locus", "intensity", clip_on=False, color="w", lw=2, bw_adjust=0.5)
+    g.map(
+        sns.kdeplot,
+        "center_locus",
+        "intensity",
+        clip_on=False,
+        color="w",
+        lw=2,
+        bw_adjust=0.5,
+    )
     g.map(plt.axhline, y=0, lw=2, clip_on=False)
     g.map(label, "molid")
 
     # Set the subplots to overlap
-    g.fig.subplots_adjust(hspace=-.25)
+    g.fig.subplots_adjust(hspace=-0.25)
 
     # Remove axes details that don't play well with overlap
     g.set_titles("")
@@ -54,12 +64,12 @@ def make_ridge_plot(data: pd.DataFrame):
 
 
 def make_line_plot(data: pd.DataFrame):
-    molid = data['molid'].unique()
+    molid = data["molid"].unique()
     offset = np.arange(len(molid)) * 180
     mapping = dict(zip(molid, offset))
-    data['added'] = data['molid'].map(mapping)
-    data['intensity'] += data['added']
-    data['molid'] = data['molid'].astype(np.dtype('<U15'))
+    data["added"] = data["molid"].map(mapping)
+    data["intensity"] += data["added"]
+    data["molid"] = data["molid"].astype(np.dtype("<U15"))
     fig, ax = plt.subplots()
     sns.lineplot(data=data, x="center_locus", y="intensity", hue="molid")
 
@@ -99,14 +109,32 @@ def show_da_as_tracks(bg: BedGraph):
     return current_data
 
 
+@magicgui(call_button="Show", layout="form")
+def main(filename: pathlib.Path, show_image: bool = True, show_traces: bool = True):
+    filename = pathlib.Path(filename)
+    assert filename.exists()
+    bed = BedGraph(filename)
+    bed.add_center_locus()
+    bed.convert_df_to_da()
+    if show_traces:
+        show_da_as_tracks(bed)
+        plt.show(block=False)
+    if show_image:
+        fig = show_da_as_img(bed)
+        fig.show()
+
+
 if __name__ == "__main__":
     filename = pathlib.Path(
         "tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph"
     )
-    bed = BedGraph(filename)
-    bed.add_center_locus()
-    bed.convert_df_to_da()
-    # fig = show_da_as_img(bed)
-    # fig.show()
-    current_data = show_da_as_tracks(bed)
-    # plt.show(block=False)
+
+    with event_loop():
+        gui = main.Gui(show=True)
+        # bed = BedGraph(filename)
+        # bed.add_center_locus()
+        # bed.convert_df_to_da()
+        # # fig = show_da_as_img(bed)
+        # # fig.show()
+        # current_data = show_da_as_tracks(bed)
+        # # plt.show(block=False)
