@@ -99,10 +99,8 @@ def show_da_as_tracks(bg: BedGraph):
     )
     molids = bg.data.loc[:, "molid"].unique()
     data = bg.data.set_index("molid")
-    print(groups)
     for start, end in pairwise(groups):
         current_molids = molids[start:end]
-        print(current_molids)
         current_data = data.loc[current_molids, :].reset_index()
         make_line_plot(current_data)
         plt.show(block=False)
@@ -121,6 +119,7 @@ def main(filename: pathlib.Path, show_image: bool = True, show_traces: bool = Tr
         plt.show(block=False)
     if show_image:
         fig = show_da_as_img(bed)
+        print(list(zip(range(len(bed.dataarray)), bed.dataarray.coords['molid'].values)))
         fig.show()
 
 

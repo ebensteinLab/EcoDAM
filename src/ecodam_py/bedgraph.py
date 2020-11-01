@@ -96,3 +96,6 @@ class BedGraph:
 
 if __name__ == '__main__':
     bed = BedGraph('tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph')
+    bed.add_center_locus()
+    bed.convert_df_to_da()
+    print(bed.dataarray.coords['molid'])
