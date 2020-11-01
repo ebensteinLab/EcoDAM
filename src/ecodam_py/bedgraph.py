@@ -10,7 +10,7 @@ import attr
 
 
 class BedGraph:
-    def __init__(self, file: pathlib.Path):
+    def __init__(self, file: pathlib.Path, header=True):
         """A BedGraph file which can be manipulated an displayed.
 
         The init function will also normalize column names for easier processing down
@@ -20,11 +20,16 @@ class BedGraph:
         ----------
         file : pathlib.Path
             Data as BedGraph to read
+        header : bool, optional
+            Whether the file contains a header or not 
         """
         self.file = file
-        self.data = pd.read_csv(file, sep="\t")
-        self.data.columns = self.data.columns.str.replace(" ", "_").str.lower()
-        self._sort_molecule_by_intensity()
+        if header:
+            self.data = pd.read_csv(file, sep="\t")
+            self.data.columns = self.data.columns.str.replace(" ", "_").str.lower()
+            self._sort_molecule_by_intensity()
+        else:
+            self.data = pd.read_csv(file, sep="\t", header=None, names=['chr', 'start_locus', 'end_locus', 'intensity'])
 
     def add_center_locus(self):
         """Adds a center point to each segment of a molecule.
@@ -92,6 +97,18 @@ class BedGraph:
                 da.loc[row[-2], row[2] : row[3]] + row[4]
             ) / 2
         return da
+
+    def smooth(self, window: int=1000):
+        """Smooths out the data with the given-sized window.
+
+        Parameters
+        ----------
+        window : int
+            Smooth data by this window
+        """
+        weights = np.ones(window)
+        weights /= weights.sum()
+        self.data['smoothed'] = np.convolve(self.data['intensity'], weights, mode='same')
 
 
 if __name__ == '__main__':
