@@ -6,7 +6,6 @@ import pandas as pd
 from ecodam_py.bedgraph import BedGraph
 
 
-
 def _trim_start_end(data: pd.DataFrame, start: int, end: int):
     """Cuts the data so that it starts at start and ends at end.
 
@@ -63,6 +62,12 @@ def convert_to_intervalindex(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
+def generate_intervals_1kb(data) -> pd.IntervalIndex:
+    first, last = data.index[0], data.index[-1]
+    idx = pd.interval_range(first.left, last.right, freq=1000, closed='left')
+    return idx
+
+
 if __name__ == '__main__':
     eco_fname = pathlib.Path('/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/chromatin_chr15.filter17_60_75.NoBlacklist.NoMask.bedgraph')
     atac_fname = pathlib.Path('/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/ATAC_rep1to3_Fold_change_over_control.chr15.bedgraph')
@@ -74,10 +79,10 @@ if __name__ == '__main__':
     eco, atac = put_on_even_grounds(eco, atac)
     eco.data = convert_to_intervalindex(eco.data)
     atac.data = convert_to_intervalindex(atac.data)
-    newint = generate_intervals_1kb()
+    newint = generate_intervals_1kb(atac.data)
     newdf = pd.DataFrame(np.full(len(newint), np.nan), index=newint, columns=['intensity'])
     for int_ in newint:
         overlapping = atac.data.index.overlaps(int_)
         # what if len(overlapping) == 0?
-        newdf.at[int_, 'intensity'] = atac.data.loc[overlapping, 'intensity'].mean()
+        newdf.loc[int_, 'intensity'] = atac.data.loc[overlapping, 'intensity'].mean()
 
