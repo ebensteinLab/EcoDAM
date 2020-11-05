@@ -45,6 +45,7 @@ INSTALL_REQUIRES = [
     'chart_studio',
     'gffutils',
     'magicgui',
+    'scikit-image',
 ]
 
 ###################################################################

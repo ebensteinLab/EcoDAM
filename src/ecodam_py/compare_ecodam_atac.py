@@ -2,6 +2,8 @@ import pathlib
 
 import numpy as np
 import pandas as pd
+import skimage.exposure
+import matplotlib.pyplot as plt
 
 from ecodam_py.bedgraph import BedGraph
 
@@ -68,6 +70,17 @@ def generate_intervals_1kb(data) -> pd.IntervalIndex:
     return idx
 
 
+def equalize_distribs(eco, atac):
+    eco.loc[:, 'intensity'] -= eco.loc[:, 'intensity'].min()
+    atac_matched = skimage.exposure.match_histograms(atac.intensity.to_numpy(), eco.intensity.to_numpy())
+    fig, ax = plt.subplots()
+    ax.plot(eco.index.mid, eco.intensity, label='EcoDAM', alpha=0.25)
+    ax.plot(atac.index.mid, atac_matched, label='ATAC', alpha=0.25)
+    ax.legend()
+    ax.set_ylabel('Intensity')
+    ax.set_xlabel('Locus')
+    
+
 if __name__ == '__main__':
     eco_fname = pathlib.Path('/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/chromatin_chr15.filter17_60_75.NoBlacklist.NoMask.bedgraph')
     atac_fname = pathlib.Path('/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/ATAC_rep1to3_Fold_change_over_control.chr15.bedgraph')
@@ -80,9 +93,12 @@ if __name__ == '__main__':
     eco.data = convert_to_intervalindex(eco.data)
     atac.data = convert_to_intervalindex(atac.data)
     newint = generate_intervals_1kb(atac.data)
-    newdf = pd.DataFrame(np.full(len(newint), np.nan), index=newint, columns=['intensity'])
+    newatac = pd.DataFrame(np.full(len(newint), np.nan), index=newint, columns=['intensity'])
     for int_ in newint:
         overlapping = atac.data.index.overlaps(int_)
         # what if len(overlapping) == 0?
-        newdf.loc[int_, 'intensity'] = atac.data.loc[overlapping, 'intensity'].mean()
+        newatac.loc[int_, 'intensity'] = atac.data.loc[overlapping, 'intensity'].mean()
+    equalize_distribs(eco.data.drop('chr', axis=1), newatac)
+    plt.show()
+
 
