@@ -28,8 +28,10 @@ class BedGraph:
             self.data = pd.read_csv(file, sep="\t")
             self.data.columns = self.data.columns.str.replace(" ", "_").str.lower()
             self._sort_molecule_by_intensity()
+            self.data = self.data.astype({'molid': 'category'})
         else:
             self.data = pd.read_csv(file, sep="\t", header=None, names=['chr', 'start_locus', 'end_locus', 'intensity'])
+            self.data = self.data.astype({'chr': 'category'})
 
     def add_center_locus(self):
         """Adds a center point to each segment of a molecule.

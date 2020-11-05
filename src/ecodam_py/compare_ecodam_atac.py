@@ -5,16 +5,31 @@ import pandas as pd
 
 from ecodam_py.bedgraph import BedGraph
 
-eco_fname = pathlib.Path('/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/chromatin_chr15.filter17_60_75.NoBlacklist.NoMask.bedgraph')
-atac_fname = pathlib.Path('/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/ATAC_rep1to3_Fold_change_over_control.chr15.bedgraph')
 
 
-eco = BedGraph(eco_fname, header=False)
-atac = BedGraph(atac_fname, header=False)
-atac.smooth(window=1000)
+def _trim_start_end(data: pd.DataFrame, start: int, end: int):
+    """Cuts the data so that it starts at start and ends at end.
+
+    The values refer to the 'start_locus' column of the data DataFrame.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        Data before trimming
+    start, end : int
+        Values from 'start_locus' to cut by
+
+    Returns
+    -------
+    pd.DataFrame
+        Trimmed data
+    """
+    start_idx = data['start_locus'].searchsorted(start)
+    end_idx = data['start_locus'].searchsorted(end, side='right')
+    return data.iloc[start_idx:end_idx, :]
 
 
-def put_one_even_grounds(eco: BedGraph, atac: BedGraph) -> tuple:
+def put_on_even_grounds(eco: BedGraph, atac: BedGraph) -> tuple:
     """Makes sure that the Eco and ATAC data start and end at overlapping
     areas.
 
@@ -30,6 +45,39 @@ def put_one_even_grounds(eco: BedGraph, atac: BedGraph) -> tuple:
     -------
     eco, atac : BedGraph
     """
-    pass
+    eco_start, atac_start = eco.data.iloc[0, 1], atac.data.iloc[0, 1]
+    unified_start = max(eco_start, atac_start)
+    eco_end, atac_end = eco.data.iloc[-1, 1], atac.data.iloc[-1, 1]
+    unified_end = min(eco_end, atac_end)
+    eco.data = _trim_start_end(eco.data, unified_start, unified_end)
+    atac.data = _trim_start_end(atac.data, unified_start, unified_end)
+    return eco, atac
 
+
+def convert_to_intervalindex(data: pd.DataFrame) -> pd.DataFrame:
+    left = data.loc[:, 'start_locus'].copy()
+    right = data.loc[:, 'end_locus'].copy()
+    data = data.drop(['start_locus', 'end_locus'], axis=1)
+    index = pd.IntervalIndex.from_arrays(left, right, closed='left', name='locus')
+    data = data.set_index(index)
+    return data
+
+
+if __name__ == '__main__':
+    eco_fname = pathlib.Path('/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/chromatin_chr15.filter17_60_75.NoBlacklist.NoMask.bedgraph')
+    atac_fname = pathlib.Path('/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/ATAC_rep1to3_Fold_change_over_control.chr15.bedgraph')
+    eco = BedGraph(eco_fname, header=False)
+    atac = BedGraph(atac_fname, header=False)
+    eco.data = eco.data.sort_values('start_locus')
+    atac.data = atac.data.sort_values('start_locus')
+    atac.data.loc[:, 'end_locus'] += 100
+    eco, atac = put_on_even_grounds(eco, atac)
+    eco.data = convert_to_intervalindex(eco.data)
+    atac.data = convert_to_intervalindex(atac.data)
+    newint = generate_intervals_1kb()
+    newdf = pd.DataFrame(np.full(len(newint), np.nan), index=newint, columns=['intensity'])
+    for int_ in newint:
+        overlapping = atac.data.index.overlaps(int_)
+        # what if len(overlapping) == 0?
+        newdf.at[int_, 'intensity'] = atac.data.loc[overlapping, 'intensity'].mean()
 

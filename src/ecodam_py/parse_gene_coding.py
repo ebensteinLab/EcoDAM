@@ -26,22 +26,21 @@ def filter_by_required_gene(data, gene_type) -> pd.DataFrame:
                     start,
                     end,
                     gene.attributes["gene_name"][0],
+                    gene.id,
                     gene.strand,
                 )
             )
-
-    parsed = pd.DataFrame(newfile, columns=['chr', 'start', 'end', 'name', 'strand'])
+    parsed = pd.DataFrame(newfile, columns=['chr', 'start', 'end', 'name', 'id', 'strand'])
     return parsed
 
 
 if __name__ == '__main__':
     fname = pathlib.Path(
-        "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Michael/GeneExpression/gencode.v35.annotation.gtf"
+        "/home/hagaih/Downloads/gencode.v35.annotation.gtf"
     )
 
     data = gffutils.create_db(
         str(fname),
-        # str(fname.with_name("gencode.v35.annotation_feauturedb.gtf")),
         ':memory:',
         id_spec={"gene": "gene_id", "transcript": "transcript_id"},
         merge_strategy="create_unique",
