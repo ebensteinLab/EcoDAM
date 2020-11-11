@@ -6,7 +6,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import xarray as xr
 import plotly.express as px
-import attr
 
 
 class BedGraph:
@@ -21,7 +20,7 @@ class BedGraph:
         file : pathlib.Path
             Data as BedGraph to read
         header : bool, optional
-            Whether the file contains a header or not 
+            Whether the file contains a header or not
         """
         self.file = file
         if header:
@@ -94,13 +93,13 @@ class BedGraph:
         The method also normalizes the intensity counts so that the recorded
         value is the average of the new value and the previous one.
         """
-        for row in self.data.itertuples(index=False, name=None):
-            da.loc[row[-2], row[2] : row[3]] = (
-                da.loc[row[-2], row[2] : row[3]] + row[4]
+        for row in self.data.itertuples(index=False):
+            da.loc[row.molid_rank, row.start_locus : row.end_locus] = (
+                da.loc[row.molid_rank, row.start_locus : row.end_locus] + row.intensity
             ) / 2
         return da
 
-    def smooth(self, window: int=1000):
+    def smooth(self, window: int = 1000):
         """Smooths out the data with the given-sized window.
 
         Parameters
@@ -114,7 +113,7 @@ class BedGraph:
 
 
 if __name__ == '__main__':
-    bed = BedGraph('tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph')
+    bed = BedGraph(pathlib.Path('tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph'))
     bed.add_center_locus()
     bed.convert_df_to_da()
     print(bed.dataarray.coords['molid'])

@@ -9,7 +9,7 @@ def find_plus_primer(start, end) -> tuple:
 
 
 def find_minus_primer(start, end) -> tuple:
-    return (end + 2000, end - 500)
+    return (end - 500, end + 2000)
 
 
 find_primer_loc = {'+': find_plus_primer, '-': find_minus_primer}
@@ -48,5 +48,5 @@ if __name__ == '__main__':
     )
     required_gene_type = ["protein_coding"]
     df = filter_by_required_gene(data, required_gene_type)
-    df.to_csv(fname.with_name('gencode.v35.annotation_filtered.csv'), sep='\t', header=None)
+    df.to_csv(fname.with_name('gencode.v35.annotation_filtered.tsv'), sep='\t', header=None, index=False)
 

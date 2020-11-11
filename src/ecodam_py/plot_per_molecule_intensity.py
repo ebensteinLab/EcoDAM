@@ -124,16 +124,17 @@ def main(filename: pathlib.Path, show_image: bool = True, show_traces: bool = Tr
 
 
 if __name__ == "__main__":
-    filename = pathlib.Path(
-        "tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph"
-    )
+    # filename = pathlib.Path(
+    #     # "tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph"
+    #     "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Michael/GeneExpression/Chromosom_X/chr23 results.IntensiteisPerMolecule_first_1000_lines.BEDgraph"
+    # )
+    # bed = BedGraph(filename)
+    # bed.add_center_locus()
+    # bed.convert_df_to_da()
+    # fig = show_da_as_img(bed)
+    # current_data = show_da_as_tracks(bed)
+    # plt.show(block=False)
+    # fig.show()
 
     with event_loop():
         gui = main.Gui(show=True)
-        # bed = BedGraph(filename)
-        # bed.add_center_locus()
-        # bed.convert_df_to_da()
-        # # fig = show_da_as_img(bed)
-        # # fig.show()
-        # current_data = show_da_as_tracks(bed)
-        # # plt.show(block=False)
