@@ -74,12 +74,16 @@ def make_line_plot(data: pd.DataFrame):
     sns.lineplot(data=data, x="center_locus", y="intensity", hue="molid")
 
 
-def show_da_as_img(bg: BedGraph):
+def show_da_as_img(bg: BedGraph, is_binary: bool = False):
+    if is_binary:
+        range_color = (0, 1)
+    else:
+        range_color = (0, np.nanmax(bg.dataarray.values) * 0.1)
     fig = px.imshow(
         bg.dataarray,
         color_continuous_scale="cividis",
         origin="lower",
-        range_color=(0, np.nanmax(bg.dataarray.values) * 0.1),
+        range_color=range_color,
     )
     return fig
 
@@ -118,7 +122,8 @@ def main(filename: pathlib.Path, show_image: bool = True, show_traces: bool = Tr
         show_da_as_tracks(bed)
         plt.show(block=False)
     if show_image:
-        fig = show_da_as_img(bed)
+        is_binary = np.array_equal(bed.data.intensity.unique(), np.array([0, 1]))
+        fig = show_da_as_img(bed, is_binary)
         print(list(zip(range(len(bed.dataarray)), bed.dataarray.coords['molid'].values)))
         fig.show()
 
