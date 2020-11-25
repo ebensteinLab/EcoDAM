@@ -46,6 +46,7 @@ INSTALL_REQUIRES = [
     'gffutils',
     'magicgui',
     'scikit-image',
+    'jupyter',
 ]
 
 ###################################################################

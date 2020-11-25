@@ -1,3 +1,13 @@
+"""
+A filteration script written pretty specifically for some GTF file that Gil
+needed to be parsed and filtered.
+
+It takes about an hour or two to run on the Irys server due to the slow
+iteration step that is performed internally by the gffutils library. 
+
+It also reverses the start and end loci on the rows with the - strand, as seen
+in the find_minus_primer function.
+"""
 import pathlib
 
 import pandas as pd

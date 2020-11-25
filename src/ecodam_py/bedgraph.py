@@ -27,10 +27,15 @@ class BedGraph:
             self.data = pd.read_csv(file, sep="\t")
             self.data.columns = self.data.columns.str.replace(" ", "_").str.lower()
             self._sort_molecule_by_intensity()
-            self.data = self.data.astype({'molid': 'category'})
+            self.data = self.data.astype({"molid": "category"})
         else:
-            self.data = pd.read_csv(file, sep="\t", header=None, names=['chr', 'start_locus', 'end_locus', 'intensity'])
-            self.data = self.data.astype({'chr': 'category'})
+            self.data = pd.read_csv(
+                file,
+                sep="\t",
+                header=None,
+                names=["chr", "start_locus", "end_locus", "intensity"],
+            )
+            self.data = self.data.astype({"chr": "category"})
 
     def add_center_locus(self):
         """Adds a center point to each segment of a molecule.
@@ -78,25 +83,39 @@ class BedGraph:
         attrs = {"chr": self.data.loc[0, "chromosome"]}
         dims = ["molnum", "locus"]
         da = xr.DataArray(
-            np.zeros((len(mol_ids), len(loci))),
+            np.full((len(mol_ids), len(loci)), np.nan),
             dims=dims,
             coords=coords,
             attrs=attrs,
         )
         self.dataarray = self._populate_da_with_intensity(da)
-        self.dataarray.values[self.dataarray.values == 0] = np.nan
 
     def _populate_da_with_intensity(self, da: xr.DataArray):
         """Iterate over the initial DA and populate an array with its
         intensity values.
 
         The method also normalizes the intensity counts so that the recorded
-        value is the average of the new value and the previous one.
+        value is the average of the new value and the previous one. There's a
+        slight issue with this normalization step since the data is zeroed
+        before any actual calculations are done. This means that if some part
+        of a molecule already had a non-NaN value, it's zeroed out. From my
+        current understanding the chances for this are zero, but perhaps I'm 
+        missing something.
         """
+        da_norm_counts = da.copy()
+        da_norm_counts[:] = 1
         for row in self.data.itertuples(index=False):
-            da.loc[row.molid_rank, row.start_locus : row.end_locus] = (
-                da.loc[row.molid_rank, row.start_locus : row.end_locus] + row.intensity
-            ) / 2
+            sl = (
+                slice(row.molid_rank, row.molid_rank + 1),
+                slice(row.start_locus, row.end_locus),
+            )
+            current_data = da.loc[sl]
+            current_nans = np.isnan(current_data)
+            if np.any(current_nans):
+                current_data[:] = 0
+            da.loc[sl] = (current_data + row.intensity) / da_norm_counts.loc[sl]
+            da_norm_counts.loc[sl] += 1
+
         return da
 
     def smooth(self, window: int = 1000):
@@ -109,11 +128,15 @@ class BedGraph:
         """
         weights = np.ones(window)
         weights /= weights.sum()
-        self.data['smoothed'] = np.convolve(self.data['intensity'], weights, mode='same')
+        self.data["smoothed"] = np.convolve(
+            self.data["intensity"], weights, mode="same"
+        )
 
 
-if __name__ == '__main__':
-    bed = BedGraph(pathlib.Path('tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph'))
+if __name__ == "__main__":
+    bed = BedGraph(
+        pathlib.Path("tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph")
+    )
     bed.add_center_locus()
     bed.convert_df_to_da()
-    print(bed.dataarray.coords['molid'])
+    print(bed.dataarray.coords["molid"])

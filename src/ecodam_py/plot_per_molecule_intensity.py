@@ -76,9 +76,9 @@ def make_line_plot(data: pd.DataFrame):
 
 def show_da_as_img(bg: BedGraph, is_binary: bool = False):
     if is_binary:
-        range_color = (0, 1)
+        range_color = None
     else:
-        range_color = (0, np.nanmax(bg.dataarray.values) * 0.1)
+        range_color = (0, np.nanmax(bg.dataarray.values) * 0.08)
     fig = px.imshow(
         bg.dataarray,
         color_continuous_scale="cividis",
@@ -130,10 +130,10 @@ def main(filename: pathlib.Path, show_image: bool = True, show_traces: bool = Tr
 
 if __name__ == "__main__":
     # filename = pathlib.Path(
-    #     # "tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph"
-    #     "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Michael/GeneExpression/Chromosom_X/chr23 results.IntensiteisPerMolecule_first_1000_lines.BEDgraph"
+    #     "tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph"
+    #     "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/68500000_68750000.threshold50.BEDgraph"
     # )
-    # bed = BedGraph(filename)
+    # bed = BedGraph(filename, header=True)
     # bed.add_center_locus()
     # bed.convert_df_to_da()
     # fig = show_da_as_img(bed)

@@ -176,21 +176,33 @@ def preprocess_bedgraph(paths: List[pathlib.Path]) -> List[BedGraph]:
     return res
 
 
-def normalize_naked_with_theo(naked, theo_fname):
-    theo = BedGraph(theo_fname, header=False)
-    beds = put_on_even_grounds([naked, theo])
-    naked = beds[0]
-    theo = beds[1]
-    no_sites = theo.data.intensity == 0
-    zero_distrib = naked.data.loc[no_sites]
+def normalize_naked_with_theo(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.DataFrame:
+    no_sites = theo.intensity == 0
+    zero_distrib = naked.loc[no_sites]
     zero_distrib.hist()
     plt.show()
-    baseline_intensity = zero_distrib.mean()
-    naked.data = naked.data.clip(lower=baseline_intensity) - baseline_intensity
-    relevant_theo = theo.data.loc[~no_sites]
+    baseline_intensity = zero_distrib.mean().to_numpy()[0]
+    naked.loc[:, 'intensity'] = naked.loc[:, 'intensity'].clip(lower=baseline_intensity) - baseline_intensity
+    # relevant_theo = theo.loc[~no_sites]
+    return naked
 
 
+def preprocess_theo(fname: pathlib.Path):
+    bed = BedGraph(fname, header=False)
+    bed.data = bed.data.query('chr == "chr15"')
+    bed.data = bed.data.sort_values('start_locus')
+    bed = convert_to_intervalindex([bed])[0]
+    return bed
 
+
+def reindex_theo_data(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.DataFrame:
+    new_theo = pd.DataFrame({'chr': 'chr15', 'intensity': np.zeros(len(naked), dtype=np.float64)})
+    for idx in range(len(new_theo)):
+        new_theo.iloc[idx, -1] = theo.loc[naked.index[idx].left:naked.index[idx].right].intensity.mean()
+    newidx = pd.IntervalIndex.from_arrays(naked.index.left, naked.index.right, closed='left', name='locus')
+    new_theo.loc[:, 'locus'] = newidx
+    new_theo = new_theo.set_index('locus')
+    return new_theo
 
 
 
@@ -204,11 +216,11 @@ if __name__ == "__main__":
     naked_fname = pathlib.Path(
         "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/NakedAF647_channel2_chr15_NoMissingChromatinWin.BEDgraph"
     )
-
-    theo_fname = pathlib.Path("/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/hg38.chr15.1kb.windows.InSilico.count.map.sum.filter_0.bedgraph")
+    theo_fname = pathlib.Path("/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/hg38.1kb.windows.InSilico.count.map.sum.bedgraph")
 
     beds = preprocess_bedgraph([eco_fname, atac_fname, naked_fname])
-    beds[2].data.loc[:, "end_locus"] += 100
+    theo = preprocess_theo(theo_fname)
+    beds[1].data.loc[:, "end_locus"] += 100  # ATAC
     beds = put_on_even_grounds(beds)
     beds = convert_to_intervalindex(beds)
     newint = generate_intervals_1kb(beds[1].data)
@@ -224,11 +236,12 @@ if __name__ == "__main__":
     newatac = newatac.reindex(beds[0].data.index)
     eco = beds[0]
     naked = beds[2]
+    theo.data = reindex_theo_data(naked.data, theo.data)
+    naked.data = normalize_naked_with_theo(naked.data, theo.data)
     eco_no_min, naked_no_min = equalize_distribs(
         eco.data.drop("chr", axis=1), naked.data.drop("chr", axis=1), newatac
     )
     ax = plot_bg(eco_no_min, naked_no_min, newatac)
-    normalize_naked_with_theo(naked, theo_fname)
     # eco_normed = normalize_eco_with_naked(eco_no_min, naked_no_min)
     closest_eco, closest_atac = find_closest_diff(eco_no_min, newatac)
     write_intindex_to_disk(
