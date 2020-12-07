@@ -88,7 +88,37 @@ class BedGraph:
             coords=coords,
             attrs=attrs,
         )
-        self.dataarray = self._populate_da_with_intensity(da)
+        if (self.data.intensity.unique() == np.array([0, 1])).all():
+            self.dataarray = self._populate_da_with_thresholded_intensity(da)
+        else:
+            self.dataarray = self._populate_da_with_intensity(da)
+
+    def _populate_da_with_thresholded_intensity(self, da: xr.DataArray):
+        """Iterate over the initial DA and populate an array with its
+        intensity values, assuming they're only 0 and 1.
+
+        The method also normalizes the intensity counts so that the recorded
+        value is the average of the new value and the previous one. There's a
+        slight issue with this normalization step since the data is zeroed
+        before any actual calculations are done. This means that if some part
+        of a molecule already had a non-NaN value, it's zeroed out. From my
+        current understanding the chances for this are zero, but perhaps I'm
+        missing something.
+
+        The underlying DataFrame contains only 0's and 1's so we skip
+        the normalization step that occurs in the sister method.
+        """
+        for row in self.data.itertuples(index=False):
+            sl = (
+                slice(row.molid_rank, row.molid_rank + 1),
+                slice(row.start_locus, row.end_locus),
+            )
+            current_data = da.loc[sl]
+            current_nans = np.isnan(current_data)
+            if np.any(current_nans):
+                current_data[:] = 0
+            da.loc[sl] = current_data
+        return da
 
     def _populate_da_with_intensity(self, da: xr.DataArray):
         """Iterate over the initial DA and populate an array with its
@@ -99,7 +129,7 @@ class BedGraph:
         slight issue with this normalization step since the data is zeroed
         before any actual calculations are done. This means that if some part
         of a molecule already had a non-NaN value, it's zeroed out. From my
-        current understanding the chances for this are zero, but perhaps I'm 
+        current understanding the chances for this are zero, but perhaps I'm
         missing something.
         """
         da_norm_counts = da.copy()
@@ -135,7 +165,7 @@ class BedGraph:
 
 if __name__ == "__main__":
     bed = BedGraph(
-        pathlib.Path("tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph")
+        pathlib.Path("/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/68500000_68750000.threshold100.BEDgraph")
     )
     bed.add_center_locus()
     bed.convert_df_to_da()
