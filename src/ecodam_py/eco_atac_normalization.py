@@ -503,3 +503,9 @@ def normalize_group_peaks_single_factor(peaks: np.ndarray, data: pd.DataFrame, n
         return data, peak_median
     normed = data * (norm_to / peak_median)
     return normed, -1
+
+
+def normalize_with_theo(data: pd.Series, theo: pd.DataFrame) -> pd.DataFrame:
+    norm_by = theo.intensity.dropna()
+    norm_by = 1 / norm_by.loc[norm_by != 0]
+    return data * norm_by
