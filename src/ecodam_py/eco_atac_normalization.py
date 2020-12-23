@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import skimage.exposure
 import matplotlib.pyplot as plt
-import scipy.signal
+import scipy.stats
 import scipy.fftpack
 
 from ecodam_py.bedgraph import BedGraph
@@ -159,8 +159,9 @@ def find_closest_diff(eco, atac, thresh=0.5):
 
 
 def write_intindex_to_disk(data: pd.DataFrame, fname: pathlib.Path):
-    start = data.index.left.copy()
-    end = data.index.right.copy()
+    data = data.copy()
+    start = data.index.left
+    end = data.index.right
     try:
         data = data.to_frame()
     except AttributeError:
@@ -241,18 +242,28 @@ def preprocess_bedgraph(paths: List[pathlib.Path]) -> List[BedGraph]:
 def subtract_background_with_theo(
     data: pd.DataFrame, theo: pd.DataFrame
 ) -> pd.DataFrame:
-    no_sites = theo.intensity == 0
+    """Remove background component and zero-information bins
+    from the data.
+
+    The bins containing a theoretical value of zero are basically garbage,
+    so we can safely discard them after using them to calculate the
+    noise levels.
+    """
+    no_sites = theo == 0
     zero_distrib = data.loc[no_sites]
-    baseline_intensity = zero_distrib.mean().to_numpy()[0]
-    data.loc[:, "intensity"] = (
-        data.loc[:, "intensity"].dropna().clip(lower=baseline_intensity)
+    baseline_intensity = zero_distrib.mean()
+    data = (
+        data.dropna().clip(lower=baseline_intensity)
         - baseline_intensity
     )
+    data = data.loc[~no_sites]
     return data
 
 
 def generate_df_for_theo_correlation_comparison(
-    data: pd.DataFrame, theo: pd.DataFrame, nquants: int=5,
+    data: pd.DataFrame,
+    theo: pd.DataFrame,
+    nquants: int = 5,
 ) -> pd.DataFrame:
     """Creates a long form dataframe that can be used to show correlation between the
     given theoretical data and some other arbitraty DF.
@@ -276,7 +287,8 @@ def generate_df_for_theo_correlation_comparison(
         Long-form DF that can be displayed as a Ridge plot
     """
     data.loc[:, "quant"] = pd.qcut(
-        theo.intensity, nquants,
+        theo.intensity,
+        nquants,
     )
     return data
 
@@ -420,3 +432,74 @@ def reindex_data_with_known_intervals(intervals, atac, naked, theo, new_index):
     newtheo = newtheo.reindex(new_index)
     return newatac, newnaked, newtheo
 
+
+def get_index_value_for_peaks(peaks: pd.DataFrame, data: pd.DataFrame) -> np.ndarray:
+    """Iterate over the peaks and extract the data index at these points."""
+    int_peaks = pd.IntervalIndex.from_arrays(peaks.start, peaks.end, closed="left")
+    res = []
+    for interval in int_peaks:
+        peak_index = np.where(data.index.overlaps(interval))[0]
+        if peak_index.size > 0:
+            res.append(peak_index[0])
+    return np.asarray(res)
+
+
+def separate_top_intensity_values(
+    chrom: pd.DataFrame, naked: pd.DataFrame, peaks: np.ndarray, no_peaks: np.ndarray
+):
+    top_eco = chrom.iloc[peaks].loc[:, "intensity"]
+    non_top_eco = chrom.iloc[no_peaks].loc[:, "intensity"]
+    top_naked = naked.iloc[peaks].loc[:, "intensity"]
+    non_top_naked = naked.iloc[no_peaks].loc[:, "intensity"]
+    return top_eco, top_naked, non_top_eco, non_top_naked
+
+
+def scatter_peaks_no_peaks(
+    top_eco: pd.DataFrame,
+    top_naked: pd.DataFrame,
+    non_top_eco: pd.DataFrame,
+    non_top_naked: pd.DataFrame,
+    ax: plt.Axes = None,
+):
+    if not ax:
+        _, ax = plt.subplots(figsize=(12, 12))
+    ax.set_xlabel("Chromatin")
+    ax.set_ylabel("Naked")
+    ax.scatter(
+        non_top_eco,
+        non_top_naked,
+        alpha=0.2,
+        label="All Points",
+    )
+    ax.scatter(top_eco, top_naked, label="Open ATAC")
+
+    ax.axvline(non_top_eco.mean(), color='C0')
+    ax.axvline(top_eco.mean(), color='C1')
+    ax.axhline(non_top_naked.mean(), color='C0')
+    ax.axhline(top_naked.mean(), color='C1')
+
+    ax.legend(
+        loc="upper right",
+        frameon=False,
+        shadow=False,
+    )
+    top = pd.DataFrame({'chrom': top_eco, 'naked': top_naked}).dropna()
+    all_ = pd.DataFrame({'chrom': non_top_eco, 'naked': non_top_naked}).dropna()
+    r_top, _ = scipy.stats.pearsonr(top.loc[:, 'chrom'], top.loc[:, 'naked'])
+    r_all, _ = scipy.stats.pearsonr(all_.loc[:, 'chrom'], all_.loc[:, 'naked'])
+    ax.text(0.01, 0.8, f"R (top) = {r_top} \nR (rest) = {r_all}", transform=ax.transAxes)
+    return ax
+
+
+def normalize_group_peaks_single_factor(peaks: np.ndarray, data: pd.DataFrame, norm_to: float = None):
+    """Multiplies the given data by some norm factor, or finds that norm factor.
+
+    We wish to normalize the two groups, naked and chrom, using the peak data. This function
+    finds the median value of the peaks and uses that value as the go-to target for the
+    other target.
+    """
+    peak_median = data.iloc[peaks].median()
+    if not norm_to:
+        return data, peak_median
+    normed = data * (norm_to / peak_median)
+    return normed, -1

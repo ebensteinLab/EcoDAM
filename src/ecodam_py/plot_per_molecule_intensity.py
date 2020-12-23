@@ -1,4 +1,5 @@
 import pathlib
+import warnings
 import itertools
 
 import numpy as np
@@ -111,8 +112,7 @@ def show_da_as_tracks(bg: BedGraph):
     return current_data
 
 
-@magicgui(call_button="Show", layout="form")
-def main(filename: pathlib.Path, show_image: bool = True, show_traces: bool = True):
+def _show_single_file(filename, show_image, show_traces):
     filename = pathlib.Path(filename)
     assert filename.exists()
     bed = BedGraph(filename)
@@ -126,6 +126,20 @@ def main(filename: pathlib.Path, show_image: bool = True, show_traces: bool = Tr
         fig = show_da_as_img(bed, is_binary)
         print(list(zip(range(len(bed.dataarray)), bed.dataarray.coords['molid'].values)))
         fig.show()
+
+
+@magicgui(call_button="Show", layout="form")
+def main(filename: pathlib.Path, show_image: bool = True, show_traces: bool = True, parse_directory: bool = False):
+    if parse_directory:
+        for file in filename.parent.glob(f"*{filename.suffix}"):
+            try:
+                _show_single_file(file, show_image, show_traces)
+            except Exception as e:
+                warnings.warn(repr(e))
+                continue
+    else:
+        _show_single_file(filename, show_image, show_traces)
+
 
 
 if __name__ == "__main__":

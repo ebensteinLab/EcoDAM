@@ -88,7 +88,7 @@ class BedGraph:
             coords=coords,
             attrs=attrs,
         )
-        if (self.data.intensity.unique() == np.array([0, 1])).all():
+        if np.asarray(self.data.intensity.unique() == np.array([0, 1])).all():
             self.dataarray = self._populate_da_with_thresholded_intensity(da)
         else:
             self.dataarray = self._populate_da_with_intensity(da)
@@ -113,11 +113,7 @@ class BedGraph:
                 slice(row.molid_rank, row.molid_rank + 1),
                 slice(row.start_locus, row.end_locus),
             )
-            current_data = da.loc[sl]
-            current_nans = np.isnan(current_data)
-            if np.any(current_nans):
-                current_data[:] = 0
-            da.loc[sl] = current_data
+            da.loc[sl] = row.intensity
         return da
 
     def _populate_da_with_intensity(self, da: xr.DataArray):
@@ -165,7 +161,9 @@ class BedGraph:
 
 if __name__ == "__main__":
     bed = BedGraph(
-        pathlib.Path("/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/68500000_68750000.threshold100.BEDgraph")
+        pathlib.Path(
+            "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/68500000_68750000.threshold100.BEDgraph"
+        )
     )
     bed.add_center_locus()
     bed.convert_df_to_da()
