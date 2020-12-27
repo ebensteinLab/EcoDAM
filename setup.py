@@ -47,6 +47,7 @@ INSTALL_REQUIRES = [
     'magicgui',
     'scikit-image',
     'jupyter',
+    'numba',
 ]
 
 ###################################################################

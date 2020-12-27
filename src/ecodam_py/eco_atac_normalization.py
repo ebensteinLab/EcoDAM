@@ -390,11 +390,11 @@ def reindex_theo_data(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.DataFrame:
     return new_theo
 
 
-def serialize_bedgraph(bed: BedGraph, path: pathlib.Path):
+def serialize_bedgraph(bed: BedGraph, path: pathlib.Path, chr_: str = 'chr15'):
     data = bed.data
     data.loc[:, "left"] = data.index.left
     data.loc[:, "right"] = data.index.right
-    data.loc[:, "chr"] = "chr15"
+    data.loc[:, "chr"] = chr_
     data = data.reindex(["chr", "left", "right", "intensity"], axis=1)
     data.to_csv(
         path,
