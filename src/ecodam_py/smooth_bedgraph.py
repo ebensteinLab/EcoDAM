@@ -11,6 +11,7 @@ import numba
 import numpy as np
 import scipy.signal
 from magicgui import magicgui, event_loop
+from scipy.signal.windows.windows import gaussian
 
 from ecodam_py.bedgraph import BedGraph
 from ecodam_py.eco_atac_normalization import (
@@ -278,7 +279,7 @@ def downsample_smoothed_to_reference(
         else:
             first_idx = np.where(upsampled_starts >= start)[0][0]
             new_data[idx] = data[
-                first_idx - starting_delta : first_idx + diff - starting_delta
+                upsampled_starts[first_idx] - starting_delta : upsampled_starts[first_idx] + diff - starting_delta
             ].mean()
             first_idx += diff
             upsampled_starts = upsampled_starts[first_idx:]
@@ -297,7 +298,7 @@ def smooth_bedgraph(
     ),
     window: WindowStr = WindowStr.Boxcar,
     size_in_bp: str = "1000",
-    gaussian_std: float = 0.0,
+    gaussian_std: str = "0",
     normalize_to_reference: bool = False,
 ):
     """Smoothes the given BedGraph data and writes it back to disk.
@@ -309,6 +310,10 @@ def smooth_bedgraph(
     entry's loci will serve as the points to which the given filename will be
     normalized to.
 
+    If the smoothing window's size is 0 no smoothing will occur. Depending on
+    normalize_to_reference the code can resample the given data to a different
+    set of coordinates.
+
     Parameters
     ----------
     filename : pathlib.Path
@@ -317,9 +322,10 @@ def smooth_bedgraph(
         If 'normalize_to_reference' is checked, use this file's loci as the
         coordinates for the new smoothed data
     window : WindowStr, optional
-        Window type to smooth using, by default WindowStr.Boxcar
+        Window type to smooth using, by default, WindowStr.Boxcar
     size_in_bp : str, optional
-        Number of basepairs to smooth by, by default "1000"
+        Number of basepairs to smooth by, by default "1000". Change to 0
+        to skip the smoothing step
     gaussian_std : float, optional
         If using Gaussian window define its standard deviation,
         by default 0.0
@@ -330,10 +336,15 @@ def smooth_bedgraph(
     assert filename.exists()
     bed = BedGraph(filename, header=False)
     size_in_bp = int(size_in_bp)
-    window_array = WINDOWS[window.value](size_in_bp, gaussian_std)
+    gaussian_std = int(gaussian_std)
     resampled = resample_data(bed.data.copy())
-    conv_result = smooth(resampled, window_array)
-    new_filename = filename.stem + f"_smoothed_{size_in_bp // 1000}kb"
+    if size_in_bp > 0:
+        window_array = WINDOWS[window.value](size_in_bp, gaussian_std)
+        conv_result = smooth(resampled, window_array)
+        new_filename = filename.stem + f"_smoothed_{size_in_bp // 1000}kb"
+    else:
+        conv_result = resampled
+        new_filename = filename.stem
     if normalize_to_reference:
         reference = BedGraph(reference_filename, header=False)
         starts, ends, _ = _pull_index_data(bed.data)

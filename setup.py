@@ -48,6 +48,7 @@ INSTALL_REQUIRES = [
     'scikit-image',
     'jupyter',
     'numba',
+    'pybigwig',
 ]
 
 ###################################################################
