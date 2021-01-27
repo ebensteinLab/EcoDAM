@@ -155,5 +155,4 @@ if __name__ == "__main__":
     # plt.show(block=False)
     # fig.show()
 
-    with event_loop():
-        gui = main.Gui(show=True)
+    main.show(run=True)

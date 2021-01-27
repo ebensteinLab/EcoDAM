@@ -7,6 +7,7 @@ from typing import Tuple, List
 
 import seaborn as sns
 import numpy as np
+import numba
 import pandas as pd
 import skimage.exposure
 import matplotlib.pyplot as plt
@@ -54,14 +55,21 @@ def put_on_even_grounds(beds: List[BedGraph]) -> List[BedGraph]:
     -------
     List[BedGraph]
     """
-    starts = [bed.data.iloc[0, 1] for bed in beds]
-    unified_start = max(starts)
-    ends = [bed.data.iloc[-1, 1] for bed in beds]
-    unified_end = min(ends)
-    new_dfs = [_trim_start_end(bed.data, unified_start, unified_end) for bed in beds]
+    dfs = [bed.data for bed in beds]
+    new_dfs = put_dfs_on_even_grounds(dfs)
     for bed, new_df in zip(beds, new_dfs):
         bed.data = new_df
     return beds
+
+
+def put_dfs_on_even_grounds(dfs: List[pd.DataFrame]) -> List[pd.DataFrame]:
+    """Asserts overlap of all given DataFrames."""
+    starts = [data.start_locus.iloc[0] for data in dfs]
+    unified_start = max(starts)
+    ends = [data.end_locus.iloc[-1] for data in dfs]
+    unified_end = min(ends)
+    new_dfs = [_trim_start_end(data, unified_start, unified_end) for data in dfs]
+    return new_dfs
 
 
 def convert_to_intervalindex(beds: List[BedGraph]) -> List[BedGraph]:
@@ -158,7 +166,9 @@ def find_closest_diff(eco, atac, thresh=0.5):
     return closest_eco, closest_atac
 
 
-def write_intindex_to_disk(data: pd.DataFrame, fname: pathlib.Path):
+def write_intindex_to_disk(
+    data: pd.DataFrame, fname: pathlib.Path, chr_: str = "chr15"
+):
     data = data.copy()
     start = data.index.left
     end = data.index.right
@@ -168,7 +178,7 @@ def write_intindex_to_disk(data: pd.DataFrame, fname: pathlib.Path):
         pass
     data.loc[:, "start"] = start
     data.loc[:, "end"] = end
-    data.loc[:, "chr"] = "chr15"
+    data.loc[:, "chr"] = chr_
     data = data.reindex(["chr", "start", "end", "intensity"], axis=1)
     data.to_csv(fname, sep="\t", header=None, index=False)
 
@@ -240,7 +250,7 @@ def preprocess_bedgraph(paths: List[pathlib.Path]) -> List[BedGraph]:
 
 
 def subtract_background_with_theo(
-    data: pd.DataFrame, theo: pd.DataFrame
+    data: pd.DataFrame, no_sites: np.ndarray,
 ) -> pd.DataFrame:
     """Remove background component and zero-information bins
     from the data.
@@ -249,13 +259,9 @@ def subtract_background_with_theo(
     so we can safely discard them after using them to calculate the
     noise levels.
     """
-    no_sites = theo == 0
     zero_distrib = data.loc[no_sites]
     baseline_intensity = zero_distrib.mean()
-    data = (
-        data.dropna().clip(lower=baseline_intensity)
-        - baseline_intensity
-    )
+    data = data.dropna().clip(lower=baseline_intensity) - baseline_intensity
     data = data.loc[~no_sites]
     return data
 
@@ -390,7 +396,7 @@ def reindex_theo_data(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.DataFrame:
     return new_theo
 
 
-def serialize_bedgraph(bed: BedGraph, path: pathlib.Path, chr_: str = 'chr15'):
+def serialize_bedgraph(bed: BedGraph, path: pathlib.Path, chr_: str = "chr15"):
     data = bed.data
     data.loc[:, "left"] = data.index.left
     data.loc[:, "right"] = data.index.right
@@ -433,15 +439,116 @@ def reindex_data_with_known_intervals(intervals, atac, naked, theo, new_index):
     return newatac, newnaked, newtheo
 
 
-def get_index_value_for_peaks(peaks: pd.DataFrame, data: pd.DataFrame) -> np.ndarray:
-    """Iterate over the peaks and extract the data index at these points."""
-    int_peaks = pd.IntervalIndex.from_arrays(peaks.start, peaks.end, closed="left")
-    res = []
-    for interval in int_peaks:
-        peak_index = np.where(data.index.overlaps(interval))[0]
-        if peak_index.size > 0:
-            res.append(peak_index[0])
-    return np.asarray(res)
+def get_index_values_for_nfr(
+    nfr: pd.DataFrame, chrom: pd.DataFrame, open_pct=0.75
+) -> np.ndarray:
+    """Iterate over the NFR and extract the data indices at these points.
+
+    The peaks DF contains the start and end coordintes of the nucleosome-free
+    regions of the chromosome. Our goal is to capture the same areas from the
+    second DF, usually the chromatin one, so that we'd see whether there's any
+    correlation between the ATAC NFR and the chromatin values.
+
+    Sadly it's not that straight forward - the granularity of the open ATAC
+    regions is at a higher resolution than 1 kb. This can lead to many false
+    positives - we could accidently mark an entire KB as open even though only
+    100 bp of it were truly open.
+
+    To circumvent it we'll define a region as open only if more than open_pct
+    of the BP in it are open.
+
+    Parameters
+    ----------
+    nfr : pd.DataFrame
+        BedGraph DF with the open regions listed
+    chrom : pd.DataFrame
+        The other data you wish to extract at these open regions, usually
+        the chromatin data
+    open_pct : float
+        Fraction of open BP needed to tag an area as NF.
+
+    Returns
+    -------
+    np.ndarray
+        Unique indices of the data at these NFR
+    """
+    nfr_even, chromatin_even = put_dfs_on_even_grounds([nfr.copy(), chrom.copy()])
+    nfr_even, chromatin_even = pad_with_zeros(nfr_even, chromatin_even)
+    nfr_at_1bp, nfr_groups = intervals_to_mask(
+        nfr_even.start_locus.to_numpy(), nfr_even.end_locus.to_numpy()
+    )
+    chromatin_at_1bp, chrom_groups = intervals_to_mask(
+        chromatin_even.start_locus.to_numpy(), chromatin_even.end_locus.to_numpy()
+    )
+    unified = nfr_at_1bp * chromatin_at_1bp
+    means = pd.DataFrame({"group": chrom_groups, "unified": unified}).groupby('group').mean()
+    assert len(means) == (len(chrom) + 1)
+    means = means.query('unified > @open_pct')
+    return chrom.iloc[means.index-1, :].index.to_numpy()
+
+
+def pad_with_zeros(nfr: pd.DataFrame, chrom: pd.DataFrame):
+    if nfr.start_locus.iloc[0] < chrom.start_locus.iloc[0]:
+        dup = chrom.iloc[0].copy()
+        dup.start_locus = nfr.start_locus.iloc[0]
+        dup.end_locus = chrom.start_locus.iloc[0]
+        dup.intensity = 0
+        chrom = pd.concat([dup.to_frame().T, chrom], axis=0, ignore_index=True).astype({'start_locus': np.uint64, 'end_locus': np.uint64})
+    elif nfr.start_locus.iloc[9] > chrom.start_locus.iloc[0]:
+        dup = nfr.iloc[0].copy()
+        dup.start_locus = chrom.start_locus.iloc[0]
+        dup.end_locus = nfr.start_locus.iloc[0]
+        dup.intensity = 0
+        nfr = pd.concat([dup.to_frame().T, nfr], axis=0, ignore_index=True).astype({'start_locus': np.uint64, 'end_locus': np.uint64})
+
+    if nfr.end_locus.iloc[-1] < chrom.end_locus.iloc[-1]:
+        dup = nfr.iloc[-1].copy()
+        dup.start_locus = nfr.end_locus.iloc[-1]
+        dup.end_locus = chrom.end_locus.iloc[-1]
+        dup.intensity = 0
+        nfr = pd.concat([nfr, dup.to_frame().T], axis=0, ignore_index=True).astype({'start_locus': np.uint64, 'end_locus': np.uint64})
+    elif nfr.end_locus.iloc[-1] > chrom.end_locus.iloc[-1]:
+        dup = chrom.iloc[-1].copy()
+        dup.start_locus = chrom.end_locus.iloc[-1]
+        dup.end_locus = nfr.end_locus.iloc[-1]
+        dup.intensity = 0
+        chrom = pd.concat([chrom, dup.to_frame().T], axis=0, ignore_index=True).astype({'start_locus': np.uint64, 'end_locus': np.uint64})
+    return nfr, chrom
+
+
+@numba.njit(cache=True, parallel=True)
+def intervals_to_mask(
+    start: np.ndarray, end: np.ndarray
+) -> Tuple[np.ndarray, np.ndarray]:
+    length = end[-1] - start[0]
+    mask = np.zeros(length, dtype=np.uint8)
+    groups = np.zeros(length, dtype=np.uint64)
+    end -= start[0]
+    start -= start[0]
+    one = np.uint8(1)
+    for idx in numba.prange(len(start)):
+        st = start[idx]
+        en = end[idx]
+        mask[st:en] = one
+        groups[st:en] = idx + 1
+    return mask, groups
+
+
+def _upsample_df(data: pd.DataFrame) -> pd.DataFrame:
+    """Generates a 1 bp resolution DF from an existing DF.
+
+    The given DF, usually from get_index_values_from_nfr, has a lower
+    resolution given the type of data that it holds. This method will generate
+    a 1bp resolution DF that can later be processed.
+    """
+    start = data.start.iloc[0]
+    end = data.end.iloc[-1]
+    new_intervals = pd.interval_range(start, end, freq=1, closed="left")
+    new_df = pd.DataFrame({"intensity": 0}, index=new_intervals)
+    old_intervals = pd.IntervalIndex.from_arrays(data.start, data.end, closed="left")
+    for interval in old_intervals:
+        new_df.loc[new_df.index.overlaps(interval), "intensity"] = 1
+    return new_df
 
 
 def separate_top_intensity_values(
@@ -473,25 +580,31 @@ def scatter_peaks_no_peaks(
     )
     ax.scatter(top_eco, top_naked, label="Open ATAC")
 
-    ax.axvline(non_top_eco.mean(), color='C0')
-    ax.axvline(top_eco.mean(), color='C1')
-    ax.axhline(non_top_naked.mean(), color='C0')
-    ax.axhline(top_naked.mean(), color='C1')
+    ax.axvline(non_top_eco.mean(), color="C0")
+    ax.axvline(top_eco.mean(), color="C1")
+    ax.axhline(non_top_naked.mean(), color="C0")
+    ax.axhline(top_naked.mean(), color="C1")
 
     ax.legend(
         loc="upper right",
         frameon=False,
         shadow=False,
     )
-    top = pd.DataFrame({'chrom': top_eco, 'naked': top_naked}).dropna()
-    all_ = pd.DataFrame({'chrom': non_top_eco, 'naked': non_top_naked}).dropna()
-    r_top, _ = scipy.stats.pearsonr(top.loc[:, 'chrom'], top.loc[:, 'naked'])
-    r_all, _ = scipy.stats.pearsonr(all_.loc[:, 'chrom'], all_.loc[:, 'naked'])
-    ax.text(0.01, 0.8, f"R (top) = {r_top} \nR (rest) = {r_all}", transform=ax.transAxes)
+    # We concatenate the two DFs to a single one so that the dropna() call will
+    # "synced" between the two different rows
+    top = pd.DataFrame({"chrom": top_eco, "naked": top_naked}).dropna(axis=0)
+    all_ = pd.DataFrame({"chrom": non_top_eco, "naked": non_top_naked}).dropna(axis=0)
+    r_top, _ = scipy.stats.pearsonr(top.loc[:, "chrom"], top.loc[:, "naked"])
+    r_all, _ = scipy.stats.pearsonr(all_.loc[:, "chrom"], all_.loc[:, "naked"])
+    ax.text(
+        0.01, 0.8, f"R (top) = {r_top} \nR (rest) = {r_all}", transform=ax.transAxes
+    )
     return ax
 
 
-def normalize_group_peaks_single_factor(peaks: np.ndarray, data: pd.DataFrame, norm_to: float = None):
+def normalize_group_peaks_single_factor(
+    peaks: np.ndarray, data: pd.DataFrame, norm_to: float = None
+):
     """Multiplies the given data by some norm factor, or finds that norm factor.
 
     We wish to normalize the two groups, naked and chrom, using the peak data. This function

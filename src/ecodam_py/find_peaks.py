@@ -10,7 +10,7 @@ from ecodam_py.eco_atac_normalization import write_intindex_to_disk
 @magicgui(
     layout="form",
     call_button="Find Peaks",
-    result={"disabled": True, "fixedWidth": 500},
+    result_widget=True,
 )
 def find_peaks(
     filename: pathlib.Path,
@@ -32,6 +32,4 @@ def find_peaks(
 
 
 if __name__ == "__main__":
-    with event_loop():
-        gui = find_peaks.Gui(show=True)
-        gui.called.connect(lambda x: gui.set_widget("result", str(x), position=-1))
+    find_peaks.show(run=True)

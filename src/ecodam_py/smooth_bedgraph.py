@@ -10,7 +10,7 @@ import pandas as pd
 import numba
 import numpy as np
 import scipy.signal
-from magicgui import magicgui, event_loop
+from magicgui import magicgui
 from scipy.signal.windows.windows import gaussian
 
 from ecodam_py.bedgraph import BedGraph
@@ -220,7 +220,11 @@ def downsample_smoothed_data(
 
 @numba.njit(cache=True)
 def downsample_smoothed_to_reference(
-    data: np.ndarray, reference_starts: np.ndarray, reference_ends: np.ndarray, old_starts: np.ndarray, old_ends: np.ndarray,
+    data: np.ndarray,
+    reference_starts: np.ndarray,
+    reference_ends: np.ndarray,
+    old_starts: np.ndarray,
+    old_ends: np.ndarray,
 ) -> np.ndarray:
     """Generates a track with the same loci as the reference track.
 
@@ -257,39 +261,73 @@ def downsample_smoothed_to_reference(
         The intensity values coerced to the reference loci
     """
     upsampled_starts = np.arange(old_starts[0], old_ends[-1])
-    starting_delta = upsampled_starts[0]
+    starting_offset = upsampled_starts[0]
     new_data = np.zeros(len(reference_starts), dtype=np.float32)
     diffs = reference_ends - reference_starts
     first_idx = reference_starts[0]
     for idx, (start, diff) in enumerate(zip(reference_starts, diffs)):
         if len(upsampled_starts) == 0:
             break
-        # A performance 'trick' since np.where is heavy - usually, after
+        # A performance 'trick' since np.where is slow - usually, after
         # trimming upsampled_starts, the first remaining cell will contain the
         # relevant data for the next loci in the reference, so it's easy to
         # check this fast path first.
         if upsampled_starts[0] >= start:
-            new_data[idx] = data[
-                upsampled_starts[0]
-                - starting_delta : upsampled_starts[0]
-                + diff
-                - starting_delta
-            ].mean()
+            new_data[idx] = np.nanmean(
+                data[
+                    upsampled_starts[0]
+                    - starting_offset : upsampled_starts[0]
+                    + diff
+                    - starting_offset
+                ]
+            )
             upsampled_starts = upsampled_starts[diff:]
         else:
             first_idx = np.where(upsampled_starts >= start)[0][0]
-            new_data[idx] = data[
-                upsampled_starts[first_idx] - starting_delta : upsampled_starts[first_idx] + diff - starting_delta
-            ].mean()
+            new_data[idx] = np.nanmean(
+                data[
+                    upsampled_starts[first_idx]
+                    - starting_offset : upsampled_starts[first_idx]
+                    + diff
+                    - starting_offset
+                ]
+            )
             first_idx += diff
             upsampled_starts = upsampled_starts[first_idx:]
     return new_data
 
 
+def generate_resampled_coords(
+    df: pd.DataFrame, step: int
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Creates a new set of coordinates from the given DF.
+
+    The starts and ends of the given DataFrame are used as the reference point
+    and the intervals are given from the step number.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Start and end coords are taken from these loci
+    step : int
+        BP per step between each two measurements
+
+    Returns
+    -------
+    Tuple[np.ndarray, np.ndarray]
+        Start coords and ends coords.
+    """
+    start = df.start_locus.iloc[0]
+    end = df.end_locus.iloc[-1]
+    starts = np.arange(start, end, step, dtype=np.int64)
+    ends = np.arange(start + step, end + step, step, dtype=np.int64)
+    return starts, ends
+
+
 @magicgui(
     layout="form",
     call_button="Smooth",
-    result={"disabled": True},
+    result_widget=True,
 )
 def smooth_bedgraph(
     filename: pathlib.Path,
@@ -299,7 +337,9 @@ def smooth_bedgraph(
     window: WindowStr = WindowStr.Boxcar,
     size_in_bp: str = "1000",
     gaussian_std: str = "0",
+    overlapping_bp: str = "0",
     normalize_to_reference: bool = False,
+    resample_data_with_overlap: bool = False,
 ):
     """Smoothes the given BedGraph data and writes it back to disk.
 
@@ -312,7 +352,9 @@ def smooth_bedgraph(
 
     If the smoothing window's size is 0 no smoothing will occur. Depending on
     normalize_to_reference the code can resample the given data to a different
-    set of coordinates.
+    set of coordinates. If resample_data_with_overlap is marked then the data will be
+    sampled at fixed intervals irrespective of the original data, with an
+    overlapping factor of "overlapping_bp".
 
     Parameters
     ----------
@@ -329,15 +371,22 @@ def smooth_bedgraph(
     gaussian_std : float, optional
         If using Gaussian window define its standard deviation,
         by default 0.0
+    overlapping_bp : int, optional
+        If using 'resample_data_with_overlap' define the number of BP that each
+        window overlaps with the other
     normalize_to_reference : bool, optional
         Use the reference_filename entry to coerce the smoothed data into these
         coordinates
+    resample_data_with_overlap : bool, optional
+        Whether to keep the original coords (False) or resample the data
     """
     assert filename.exists()
     bed = BedGraph(filename, header=False)
     size_in_bp = int(size_in_bp)
     gaussian_std = int(gaussian_std)
+    overlapping_bp = int(overlapping_bp)
     resampled = resample_data(bed.data.copy())
+    chr_ = bed.data.chr.iloc[0]
     if size_in_bp > 0:
         window_array = WINDOWS[window.value](size_in_bp, gaussian_std)
         conv_result = smooth(resampled, window_array)
@@ -357,6 +406,23 @@ def smooth_bedgraph(
         )
         result = convert_to_intervalindex([reference])[0]
         new_filename += f"_coerced_to_{reference_filename.stem}.bedgraph"
+    elif resample_data_with_overlap:
+        overlapping_bp = size_in_bp // 2 if overlapping_bp == 0 else overlapping_bp
+        starts, ends, _ = _pull_index_data(bed.data)
+        coords = generate_resampled_coords(bed.data, overlapping_bp)
+        result = downsample_smoothed_to_reference(
+            conv_result, coords[0], coords[1], starts, ends
+        )
+        bed.data = pd.DataFrame(
+            {
+                "chr": chr_,
+                "start_locus": coords[0],
+                "end_locus": coords[1],
+                "intensity": result,
+            }
+        ).astype({"chr": "category"})
+        new_filename += f"_resampled_with_{overlapping_bp}_overlapping_bp.bedgraph"
+        result = convert_to_intervalindex([bed])[0]
     else:
         bed.data.loc[:, "intensity"] = downsample_smoothed_data(
             conv_result,
@@ -366,11 +432,9 @@ def smooth_bedgraph(
         result = convert_to_intervalindex([bed])[0]
         new_filename += ".bedgraph"
     new_filename = filename.with_name(new_filename)
-    serialize_bedgraph(result, new_filename)
+    serialize_bedgraph(result, new_filename, chr_)
     return str(new_filename)
 
 
 if __name__ == "__main__":
-    with event_loop():
-        gui = smooth_bedgraph.Gui(show=True)
-        gui.called.connect(lambda x: gui.set_widget("result", str(x), position=-1))
+    smooth_bedgraph.show(run=True)

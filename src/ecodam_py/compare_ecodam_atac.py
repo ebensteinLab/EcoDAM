@@ -118,12 +118,12 @@ def find_closest_diff(eco, atac, thresh=0.5):
     return closest_eco, closest_atac
 
 
-def write_intindex_to_disk(data: pd.DataFrame, fname: pathlib.Path):
+def write_intindex_to_disk(data: pd.DataFrame, fname: pathlib.Path, chr_: str = 'chr15'):
     start = data.index.left.copy()
     end = data.index.right.copy()
     data.loc[:, "start"] = start
     data.loc[:, "end"] = end
-    data.loc[:, "chr"] = "chr15"
+    data.loc[:, "chr"] = chr_
     data = data.reindex(["chr", "start", "end", "intensity"], axis=1)
     data.to_csv(fname, sep="\t", header=None, index=False)
 
@@ -187,9 +187,9 @@ def normalize_naked_with_theo(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.Dat
     return naked
 
 
-def preprocess_theo(fname: pathlib.Path):
+def preprocess_theo(fname: pathlib.Path, chr_: str = 'chr15'):
     bed = BedGraph(fname, header=False)
-    bed.data = bed.data.query('chr == "chr15"')
+    bed.data = bed.data.query('chr == @chr_')
     bed.data = bed.data.sort_values('start_locus')
     bed = convert_to_intervalindex([bed])[0]
     return bed
@@ -227,6 +227,7 @@ if __name__ == "__main__":
     newatac = pd.DataFrame(
         np.full(len(newint), np.nan), index=newint, columns=["intensity"]
     )
+   25         A backend to use, by default ``None`` (use the default backend.)                                  ??      6
     for int_ in newint:
         overlapping = beds[1].data.index.overlaps(int_)
         # what if len(overlapping) == 0?

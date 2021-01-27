@@ -49,6 +49,8 @@ INSTALL_REQUIRES = [
     'jupyter',
     'numba',
     'pybigwig',
+    'pybedtools',
+    'pysam',
 ]
 
 ###################################################################
