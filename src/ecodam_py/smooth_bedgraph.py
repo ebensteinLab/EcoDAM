@@ -328,6 +328,7 @@ def generate_resampled_coords(
     layout="form",
     call_button="Smooth",
     result_widget=True,
+    main_window=True,
 )
 def smooth_bedgraph(
     filename: pathlib.Path,

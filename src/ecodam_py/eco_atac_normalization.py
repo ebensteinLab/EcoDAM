@@ -250,7 +250,8 @@ def preprocess_bedgraph(paths: List[pathlib.Path]) -> List[BedGraph]:
 
 
 def subtract_background_with_theo(
-    data: pd.DataFrame, no_sites: np.ndarray,
+    data: pd.DataFrame,
+    no_sites: np.ndarray,
 ) -> pd.DataFrame:
     """Remove background component and zero-information bins
     from the data.
@@ -439,9 +440,22 @@ def reindex_data_with_known_intervals(intervals, atac, naked, theo, new_index):
     return newatac, newnaked, newtheo
 
 
+def get_peak_indices(peaks: pd.DataFrame, data: pd.DataFrame) -> np.ndarray:
+    """Iterate over the peaks and extract the data index at these points."""
+    int_peaks = pd.IntervalIndex.from_arrays(
+        peaks.start_locus, peaks.end_locus, closed="left"
+    )
+    res = []
+    for interval in int_peaks:
+        peak_index = np.where(data.index.overlaps(interval))[0]
+        if peak_index.size > 0:
+            res.append(peak_index[0])
+    return np.asarray(res)
+
+
 def get_index_values_for_nfr(
     nfr: pd.DataFrame, chrom: pd.DataFrame, open_pct=0.75
-) -> np.ndarray:
+) -> pd.DataFrame:
     """Iterate over the NFR and extract the data indices at these points.
 
     The peaks DF contains the start and end coordintes of the nucleosome-free
@@ -469,8 +483,8 @@ def get_index_values_for_nfr(
 
     Returns
     -------
-    np.ndarray
-        Unique indices of the data at these NFR
+    pd.DataFrame
+        Rows of the data at these NFR
     """
     nfr_even, chromatin_even = put_dfs_on_even_grounds([nfr.copy(), chrom.copy()])
     nfr_even, chromatin_even = pad_with_zeros(nfr_even, chromatin_even)
@@ -481,10 +495,14 @@ def get_index_values_for_nfr(
         chromatin_even.start_locus.to_numpy(), chromatin_even.end_locus.to_numpy()
     )
     unified = nfr_at_1bp * chromatin_at_1bp
-    means = pd.DataFrame({"group": chrom_groups, "unified": unified}).groupby('group').mean()
+    means = (
+        pd.DataFrame({"group": chrom_groups, "unified": unified})
+        .groupby("group")
+        .mean()
+    )
     assert len(means) == (len(chrom) + 1)
-    means = means.query('unified > @open_pct')
-    return chrom.iloc[means.index-1, :].index.to_numpy()
+    means = means.query("unified > @open_pct")
+    return chrom.iloc[means.index - 1, :]
 
 
 def pad_with_zeros(nfr: pd.DataFrame, chrom: pd.DataFrame):
@@ -493,26 +511,34 @@ def pad_with_zeros(nfr: pd.DataFrame, chrom: pd.DataFrame):
         dup.start_locus = nfr.start_locus.iloc[0]
         dup.end_locus = chrom.start_locus.iloc[0]
         dup.intensity = 0
-        chrom = pd.concat([dup.to_frame().T, chrom], axis=0, ignore_index=True).astype({'start_locus': np.uint64, 'end_locus': np.uint64})
+        chrom = pd.concat([dup.to_frame().T, chrom], axis=0, ignore_index=True).astype(
+            {"start_locus": np.uint64, "end_locus": np.uint64}
+        )
     elif nfr.start_locus.iloc[9] > chrom.start_locus.iloc[0]:
         dup = nfr.iloc[0].copy()
         dup.start_locus = chrom.start_locus.iloc[0]
         dup.end_locus = nfr.start_locus.iloc[0]
         dup.intensity = 0
-        nfr = pd.concat([dup.to_frame().T, nfr], axis=0, ignore_index=True).astype({'start_locus': np.uint64, 'end_locus': np.uint64})
+        nfr = pd.concat([dup.to_frame().T, nfr], axis=0, ignore_index=True).astype(
+            {"start_locus": np.uint64, "end_locus": np.uint64}
+        )
 
     if nfr.end_locus.iloc[-1] < chrom.end_locus.iloc[-1]:
         dup = nfr.iloc[-1].copy()
         dup.start_locus = nfr.end_locus.iloc[-1]
         dup.end_locus = chrom.end_locus.iloc[-1]
         dup.intensity = 0
-        nfr = pd.concat([nfr, dup.to_frame().T], axis=0, ignore_index=True).astype({'start_locus': np.uint64, 'end_locus': np.uint64})
+        nfr = pd.concat([nfr, dup.to_frame().T], axis=0, ignore_index=True).astype(
+            {"start_locus": np.uint64, "end_locus": np.uint64}
+        )
     elif nfr.end_locus.iloc[-1] > chrom.end_locus.iloc[-1]:
         dup = chrom.iloc[-1].copy()
         dup.start_locus = chrom.end_locus.iloc[-1]
         dup.end_locus = nfr.end_locus.iloc[-1]
         dup.intensity = 0
-        chrom = pd.concat([chrom, dup.to_frame().T], axis=0, ignore_index=True).astype({'start_locus': np.uint64, 'end_locus': np.uint64})
+        chrom = pd.concat([chrom, dup.to_frame().T], axis=0, ignore_index=True).astype(
+            {"start_locus": np.uint64, "end_locus": np.uint64}
+        )
     return nfr, chrom
 
 
@@ -600,6 +626,16 @@ def scatter_peaks_no_peaks(
         0.01, 0.8, f"R (top) = {r_top} \nR (rest) = {r_all}", transform=ax.transAxes
     )
     return ax
+
+
+def classify_open_closed_loci_with_quant(
+    df: pd.DataFrame, quant: float = 0.1
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    abs_sub = df.abs()
+    q = abs_sub.intensity.quantile(quant)
+    open_areas = abs_sub.query("intensity <= @q")
+    closed_areas = abs_sub.query("intensity > @q")
+    return open_areas, closed_areas
 
 
 def normalize_group_peaks_single_factor(
