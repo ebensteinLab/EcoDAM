@@ -4,14 +4,14 @@ import pandas as pd
 import pytest
 import xarray as xr
 
-from ecodam_py.bedgraph import BedGraph
+from ecodam_py.bedgraph import BedGraphFile
 
 bedgraph_with_molid = pathlib.Path('tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph')
 
 
 @pytest.fixture
 def chr23_bed():
-    return BedGraph(bedgraph_with_molid)
+    return BedGraphFile(bedgraph_with_molid)
 
 
 def test_basic_data_read(chr23_bed):

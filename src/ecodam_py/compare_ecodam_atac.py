@@ -8,7 +8,7 @@ import skimage.exposure
 import matplotlib.pyplot as plt
 import scipy.signal
 
-from ecodam_py.bedgraph import BedGraph
+from ecodam_py.bedgraph import BedGraphFile
 
 
 def _trim_start_end(data: pd.DataFrame, start: int, end: int):
@@ -33,7 +33,7 @@ def _trim_start_end(data: pd.DataFrame, start: int, end: int):
     return data.iloc[start_idx:end_idx, :]
 
 
-def put_on_even_grounds(beds: List[BedGraph]) -> List[BedGraph]:
+def put_on_even_grounds(beds: List[BedGraphFile]) -> List[BedGraphFile]:
     """Makes sure that the Eco, Naked and ATAC data start and end at
     overlapping areas.
 
@@ -42,12 +42,12 @@ def put_on_even_grounds(beds: List[BedGraph]) -> List[BedGraph]:
 
     Parameters
     ----------
-    beds : List[BedGraph]
+    beds : List[BedGraphFile]
         Data to trim in the order Eco, ATAC, Naked
 
     Returns
     -------
-    List[BedGraph]
+    List[BedGraphFile]
     """
     starts = [bed.data.iloc[0, 1] for bed in beds]
     unified_start = max(starts)
@@ -59,7 +59,7 @@ def put_on_even_grounds(beds: List[BedGraph]) -> List[BedGraph]:
     return beds
 
 
-def convert_to_intervalindex(beds: List[BedGraph]) -> List[BedGraph]:
+def convert_to_intervalindex(beds: List[BedGraphFile]) -> List[BedGraphFile]:
     for bed in beds:
         left = bed.data.loc[:, "start_locus"].copy()
         right = bed.data.loc[:, "end_locus"].copy()
@@ -167,10 +167,10 @@ def normalize_eco_with_naked(eco, naked):
     return eco_normed
 
 
-def preprocess_bedgraph(paths: List[pathlib.Path]) -> List[BedGraph]:
+def preprocess_bedgraph(paths: List[pathlib.Path]) -> List[BedGraphFile]:
     res = []
     for path in paths:
-        bed = BedGraph(path, header=False)
+        bed = BedGraphFile(path, header=False)
         bed.data = bed.data.sort_values("start_locus")
         res.append(copy.deepcopy(bed))
     return res
@@ -188,7 +188,7 @@ def normalize_naked_with_theo(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.Dat
 
 
 def preprocess_theo(fname: pathlib.Path, chr_: str = 'chr15'):
-    bed = BedGraph(fname, header=False)
+    bed = BedGraphFile(fname, header=False)
     bed.data = bed.data.query('chr == @chr_')
     bed.data = bed.data.sort_values('start_locus')
     bed = convert_to_intervalindex([bed])[0]

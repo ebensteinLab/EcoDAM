@@ -1,9 +1,14 @@
 """
 Functions accompanying the 'normalize_eco_atac.ipynb' notebook.
+
+This is a library-like assortment of functions with no clear start or end, so
+don't expect any logic that can make it seem ordered. Moreover, some of the
+functionality exists in more than one place due to the chaotic way in which
+this project was created.
 """
 import pathlib
 import copy
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
 import seaborn as sns
 import numpy as np
@@ -14,7 +19,7 @@ import matplotlib.pyplot as plt
 import scipy.stats
 import scipy.fftpack
 
-from ecodam_py.bedgraph import BedGraph
+from ecodam_py.bedgraph import BedGraphFile
 
 
 def _trim_start_end(data: pd.DataFrame, start: int, end: int):
@@ -39,7 +44,7 @@ def _trim_start_end(data: pd.DataFrame, start: int, end: int):
     return data.iloc[start_idx:end_idx, :]
 
 
-def put_on_even_grounds(beds: List[BedGraph]) -> List[BedGraph]:
+def put_on_even_grounds(beds: List[BedGraphFile]) -> List[BedGraphFile]:
     """Makes sure that the Eco, Naked and ATAC data start and end at
     overlapping areas.
 
@@ -48,12 +53,12 @@ def put_on_even_grounds(beds: List[BedGraph]) -> List[BedGraph]:
 
     Parameters
     ----------
-    beds : List[BedGraph]
+    beds : List[BedGraphFile]
         Data to trim in the order Eco, ATAC, Naked
 
     Returns
     -------
-    List[BedGraph]
+    List[BedGraphFile]
     """
     dfs = [bed.data for bed in beds]
     new_dfs = put_dfs_on_even_grounds(dfs)
@@ -63,7 +68,11 @@ def put_on_even_grounds(beds: List[BedGraph]) -> List[BedGraph]:
 
 
 def put_dfs_on_even_grounds(dfs: List[pd.DataFrame]) -> List[pd.DataFrame]:
-    """Asserts overlap of all given DataFrames."""
+    """Asserts overlap of all given DataFrames.
+
+    An accompanying function to 'put_on_even_grounds' that does the heavy
+    lifting.
+    """
     starts = [data.start_locus.iloc[0] for data in dfs]
     unified_start = max(starts)
     ends = [data.end_locus.iloc[-1] for data in dfs]
@@ -72,8 +81,8 @@ def put_dfs_on_even_grounds(dfs: List[pd.DataFrame]) -> List[pd.DataFrame]:
     return new_dfs
 
 
-def convert_to_intervalindex(beds: List[BedGraph]) -> List[BedGraph]:
-    """Creates an IntervalIndex index for each BedGraph in the given list.
+def convert_to_intervalindex(beds: List[BedGraphFile]) -> List[BedGraphFile]:
+    """Creates an IntervalIndex index for each BedGraphFile in the given list.
 
     An IntervalIndex object is very suitable for the task of describing the way
     tracks are distributed, and this function's goal is to bulk translate the
@@ -83,11 +92,11 @@ def convert_to_intervalindex(beds: List[BedGraph]) -> List[BedGraph]:
 
     Parameters
     ----------
-    beds : List[BedGraph]
+    beds : List[BedGraphFile]
 
     Returns
     -------
-    List[BedGraph]
+    List[BedGraphFile]
     """
     for bed in beds:
         left = bed.data.loc[:, "start_locus"].copy()
@@ -109,7 +118,7 @@ def generate_intervals_1kb(data: pd.DataFrame) -> pd.IntervalIndex:
     Parameters
     ----------
     data : pd.DataFrame
-        A DF of a BedGraph file after its index was converted to an
+        A DF of a BedGraphFile file after its index was converted to an
         IntervalIndex
 
     Returns
@@ -125,7 +134,9 @@ def generate_intervals_1kb(data: pd.DataFrame) -> pd.IntervalIndex:
 def equalize_distribs(dfs: List[pd.DataFrame], atac: pd.DataFrame):
     """Change the data limits of the DFs to match the ATAC one.
 
-    The"""
+    This normalization step helps us compare datasets that are displayed with
+    the same values.
+    """
     dfs = [normalize_df_between_01(df) for df in dfs]
     max_ = atac.intensity.max()
     min_ = atac.intensity.min()
@@ -141,6 +152,7 @@ def normalize_df_between_01(data):
 
 
 def match_histograms(eco: pd.DataFrame, atac: pd.DataFrame):
+    """Wrapper for the match_histograms scikit-image function"""
     atac_matched = skimage.exposure.match_histograms(
         atac.intensity.to_numpy(), eco.intensity.to_numpy()
     )
@@ -148,6 +160,7 @@ def match_histograms(eco: pd.DataFrame, atac: pd.DataFrame):
 
 
 def plot_bg(eco, naked, atac):
+    """Plots a BedGraphFile's DF"""
     fig, ax = plt.subplots()
     ax.plot(eco.index.mid, eco.iloc[:, 0], label="EcoDAM", alpha=0.25)
     ax.plot(naked.index.mid, naked.iloc[:, 0], label="Naked", alpha=0.25)
@@ -158,7 +171,26 @@ def plot_bg(eco, naked, atac):
     return ax
 
 
-def find_closest_diff(eco, atac, thresh=0.5):
+def find_closest_diff(eco: pd.Series, atac: pd.Series, thresh: float = 0.5) -> Tuple[pd.Series, pd.Series]:
+    """Subtracts the two given tracks and returns them only at the locations
+    closer than thresh.
+
+    For the given Series objects the function runs an elementwise subtraction
+    and finds the closest areas of the two tracks. Thresh is used as an
+    absolute value and not a relative one.
+
+    Parameters
+    ----------
+    eco, atac : pd.Series
+        Two tracks to diff
+    thresh : float
+        The value below which the datasets are considered close
+
+    Returns
+    -------
+    Tuple[pd.Series, pd.Series]
+        The two original datasets but only at the locations at which hey match
+    """
     diff = np.abs(eco.to_numpy().ravel() - atac.to_numpy().ravel())
     closest = diff < thresh
     closest_eco = eco.loc[closest]
@@ -167,8 +199,23 @@ def find_closest_diff(eco, atac, thresh=0.5):
 
 
 def write_intindex_to_disk(
-    data: pd.DataFrame, fname: pathlib.Path, chr_: str = "chr15"
+    data: Union[pd.Series, pd.DataFrame], fname: pathlib.Path, chr_: str = "chr15"
 ):
+    """Writes the data to disk as a bedgraph.
+
+    Serializes the data assuming that it has an IntervalIndex as its locus data.
+    The serialization format is basically a bedgraph, i.e. four columns - chr,
+    start, end, intensity.
+
+    Parameters
+    ----------
+    data : Union[pd.Series, pd.DataFrame]
+        Bedgraph-like data to serialize
+    fname : pathlib.Path
+        New filename
+    chr_ : str
+        Chromosome
+    """
     data = data.copy()
     start = data.index.left
     end = data.index.right
@@ -179,11 +226,19 @@ def write_intindex_to_disk(
     data.loc[:, "start"] = start
     data.loc[:, "end"] = end
     data.loc[:, "chr"] = chr_
+    # Reorder the columns appropriately
     data = data.reindex(["chr", "start", "end", "intensity"], axis=1)
     data.to_csv(fname, sep="\t", header=None, index=False)
 
 
 def expand_seeds(data: pd.DataFrame, cluster_thresh=15_000) -> pd.DataFrame:
+    """Generate a bedgraph-like DF from the given list of seeds.
+
+    Each seed is marked in the incoming data by start and end coordinates in
+    its index. The function detect seed clusters, i.e. areas where at least
+    two seeds exist less than 'cluster_thresh' BP apart, and then iterates over
+    all of these clusters and concatenate them together to a new BedGraphFile like
+    structure."""
     shoulders = 5000
     starts = data.index.left
     ends = data.index.right
@@ -207,6 +262,13 @@ def expand_seeds(data: pd.DataFrame, cluster_thresh=15_000) -> pd.DataFrame:
 def concat_clusters(
     eco: pd.DataFrame, atac: pd.DataFrame, clusters: pd.DataFrame
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Extracts the data from the 'eco' and 'atac' DFs using the indices in
+    'clusters'.
+
+    This function iterates over each cluster as defined in the 'clusters' input
+    and adds the corresponding values from the Chromatin and ATAC datasets
+    into new DataFrames that only contain these clusters.
+    """
     columns = ["intensity"]
     clustered_eco = pd.DataFrame(columns=columns)
     clustered_atac = pd.DataFrame(columns=columns)
@@ -218,7 +280,7 @@ def concat_clusters(
     return clustered_eco, clustered_atac
 
 
-def normalize_with_site_density(naked: BedGraph, theo: BedGraph) -> pd.DataFrame:
+def normalize_with_site_density(naked: BedGraphFile, theo: BedGraphFile) -> pd.DataFrame:
     norm_by = 1 / (theo.data.loc[:, "intensity"] + 1)
     #     no_sites = theo.data.intensity == 0
     #     normalized_naked_data = (naked.data.loc[~no_sites, "intensity"] / norm_by).to_frame()
@@ -226,24 +288,24 @@ def normalize_with_site_density(naked: BedGraph, theo: BedGraph) -> pd.DataFrame
     return normalized_naked_data
 
 
-def preprocess_bedgraph(paths: List[pathlib.Path]) -> List[BedGraph]:
+def preprocess_bedgraph(paths: List[pathlib.Path]) -> List[BedGraphFile]:
     """Run basic pre-processing for the filenames.
 
-    The function generates a BedGraph object and sorts its data
+    The function generates a BedGraphFile object and sorts its data
     attribute.
 
     Parameters
     ----------
     paths : List[pathlib.Path]
-        Paths of BedGraph files to read
+        Paths of BedGraphFile files to read
 
     Returns
     -------
-    List[BedGraph]
+    List[BedGraphFile]
     """
     res = []
     for path in paths:
-        bed = BedGraph(path, header=False)
+        bed = BedGraphFile(path, header=False)
         bed.data = bed.data.sort_values("start_locus")
         res.append(copy.deepcopy(bed))
     return res
@@ -282,7 +344,7 @@ def generate_df_for_theo_correlation_comparison(
     Parameters
     ----------
     data : pd.DataFrame
-        The DF from a BedGraph object
+        The DF from a BedGraphFile object
     theo : pd.DataFrame
         Data to compare to
     nquants : int
@@ -374,7 +436,7 @@ def show_ridge_plot(df: pd.DataFrame, name="naked") -> sns.FacetGrid:
 
 
 def preprocess_theo(fname: pathlib.Path):
-    bed = BedGraph(fname, header=False)
+    bed = BedGraphFile(fname, header=False)
     bed.data = bed.data.query('chr == "chr15"')
     bed.data = bed.data.sort_values("start_locus")
     bed = convert_to_intervalindex([bed])[0]
@@ -397,7 +459,7 @@ def reindex_theo_data(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.DataFrame:
     return new_theo
 
 
-def serialize_bedgraph(bed: BedGraph, path: pathlib.Path, chr_: str = "chr15"):
+def serialize_bedgraph(bed: BedGraphFile, path: pathlib.Path, chr_: str = "chr15"):
     data = bed.data
     data.loc[:, "left"] = data.index.left
     data.loc[:, "right"] = data.index.right
@@ -474,7 +536,7 @@ def get_index_values_for_nfr(
     Parameters
     ----------
     nfr : pd.DataFrame
-        BedGraph DF with the open regions listed
+        BedGraphFile DF with the open regions listed
     chrom : pd.DataFrame
         The other data you wish to extract at these open regions, usually
         the chromatin data

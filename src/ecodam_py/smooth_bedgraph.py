@@ -1,5 +1,5 @@
 """
-This script receives a BedGraph file as input and smoothes it out using
+This script receives a BedGraphFile file as input and smoothes it out using
 convolution with a window of the user's choosing.
 """
 import pathlib
@@ -13,7 +13,7 @@ import scipy.signal
 from magicgui import magicgui
 from scipy.signal.windows.windows import gaussian
 
-from ecodam_py.bedgraph import BedGraph
+from ecodam_py.bedgraph import BedGraphFile
 from ecodam_py.eco_atac_normalization import (
     serialize_bedgraph,
     convert_to_intervalindex,
@@ -342,9 +342,9 @@ def smooth_bedgraph(
     normalize_to_reference: bool = False,
     resample_data_with_overlap: bool = False,
 ):
-    """Smoothes the given BedGraph data and writes it back to disk.
+    """Smoothes the given BedGraphFile data and writes it back to disk.
 
-    The BedGraph data is smoothed by the given amount and written back to the
+    The BedGraphFile data is smoothed by the given amount and written back to the
     same directory with a 'smoothed' suffix. The smoothed data coordinates are
     the same as the data pre-smoothing, unless the normalize_to_reference
     checkbox is marked, which then requires a reference_filename entry. This
@@ -360,7 +360,7 @@ def smooth_bedgraph(
     Parameters
     ----------
     filename : pathlib.Path
-        BedGraph to smooth
+        BedGraphFile to smooth
     reference_filename : pathlib.Path, optional
         If 'normalize_to_reference' is checked, use this file's loci as the
         coordinates for the new smoothed data
@@ -382,7 +382,7 @@ def smooth_bedgraph(
         Whether to keep the original coords (False) or resample the data
     """
     assert filename.exists()
-    bed = BedGraph(filename, header=False)
+    bed = BedGraphFile(filename, header=False)
     size_in_bp = int(size_in_bp)
     gaussian_std = int(gaussian_std)
     overlapping_bp = int(overlapping_bp)

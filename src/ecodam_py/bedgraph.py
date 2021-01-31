@@ -8,9 +8,9 @@ import xarray as xr
 import plotly.express as px
 
 
-class BedGraph:
+class BedGraphFile:
     def __init__(self, file: pathlib.Path, header=True):
-        """A BedGraph file which can be manipulated an displayed.
+        """A BedGraphFile file which can be manipulated an displayed.
 
         The init function will also normalize column names for easier processing down
         the pipeline.
@@ -160,7 +160,7 @@ class BedGraph:
 
 
 if __name__ == "__main__":
-    bed = BedGraph(
+    bed = BedGraphFile(
         pathlib.Path(
             "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/68500000_68750000.threshold100.BEDgraph"
         )

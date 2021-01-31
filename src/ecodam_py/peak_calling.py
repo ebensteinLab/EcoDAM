@@ -7,23 +7,23 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from ecodam_py.bedgraph import BedGraph
+from ecodam_py.bedgraph import BedGraphFile
 
 
-def preprocess_data(fname: pathlib.Path) -> BedGraph:
-    """A series of simple steps that should be done automatically to BedGraph
+def preprocess_data(fname: pathlib.Path) -> BedGraphFile:
+    """A series of simple steps that should be done automatically to BedGraphFile
     data.
 
     Parameters
     ----------
     fname : pathlib.Path
-        BedGraph filename
+        BedGraphFile filename
 
     Returns
     -------
-    BedGraph
+    BedGraphFile
     """
-    bed = BedGraph(fname, header=False)
+    bed = BedGraphFile(fname, header=False)
     data = bed.data.sort_values("start_locus")
     left = bed.data.loc[:, "start_locus"].copy()
     right = bed.data.loc[:, "end_locus"].copy()
@@ -97,7 +97,7 @@ def color_peak_surroundings(
     eco_split: pd.DataFrame,
     eco_indices: np.ndarray,
 ):
-    """Generate a plot for the peak-centered BedGraph data.
+    """Generate a plot for the peak-centered BedGraphFile data.
 
     The resulting plot is a barplot that overlays the Eco and ATAC data on the
     same coordinates.

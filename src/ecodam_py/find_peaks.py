@@ -28,7 +28,7 @@ def find_peaks(
     old_suffix = filename.suffix
     new_name = new_name + "_peaks" + old_suffix
     write_intindex_to_disk(peaks, filename.with_name(new_name))
-    return f"BedGraph written to {new_name}"
+    return f"BedGraphFile written to {new_name}"
 
 
 if __name__ == "__main__":

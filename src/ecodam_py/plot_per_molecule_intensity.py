@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 from magicgui import magicgui, event_loop
 
-from ecodam_py.bedgraph import BedGraph
+from ecodam_py.bedgraph import BedGraphFile
 
 
 def label(x, color, label):
@@ -75,7 +75,7 @@ def make_line_plot(data: pd.DataFrame):
     sns.lineplot(data=data, x="center_locus", y="intensity", hue="molid")
 
 
-def show_da_as_img(bg: BedGraph, is_binary: bool = False):
+def show_da_as_img(bg: BedGraphFile, is_binary: bool = False):
     if is_binary:
         range_color = None
     else:
@@ -96,7 +96,7 @@ def pairwise(iterable):
     return zip(a, b)
 
 
-def show_da_as_tracks(bg: BedGraph):
+def show_da_as_tracks(bg: BedGraphFile):
     num_mols = len(bg.dataarray)
     num_of_tracks_per_plot = 10
     groups = np.linspace(
@@ -115,7 +115,7 @@ def show_da_as_tracks(bg: BedGraph):
 def _show_single_file(filename, show_image, show_traces):
     filename = pathlib.Path(filename)
     assert filename.exists()
-    bed = BedGraph(filename)
+    bed = BedGraphFile(filename)
     bed.add_center_locus()
     bed.convert_df_to_da()
     if show_traces:
@@ -147,7 +147,7 @@ if __name__ == "__main__":
     #     "tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph"
     #     "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/68500000_68750000.threshold50.BEDgraph"
     # )
-    # bed = BedGraph(filename, header=True)
+    # bed = BedGraphFile(filename, header=True)
     # bed.add_center_locus()
     # bed.convert_df_to_da()
     # fig = show_da_as_img(bed)
