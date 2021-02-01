@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import scipy.stats
 import scipy.fftpack
 
-from ecodam_py.bedgraph import BedGraphFile
+from ecodam_py.bedgraph import BedGraphFile, BedGraphAccessor
 
 
 def _trim_start_end(data: pd.DataFrame, start: int, end: int):

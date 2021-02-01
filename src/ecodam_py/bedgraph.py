@@ -1,4 +1,5 @@
 import pathlib
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -6,6 +7,72 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import xarray as xr
 import plotly.express as px
+
+
+@pd.api.extensions.register_dataframe_accessor("bg")
+class BedGraphAccessor:
+    """
+    Introduces a ".bg" accessor to DataFrame which provides unique capabilities
+    for the DF, like new methods and properties.
+    """
+
+    def __init__(self, pandas_obj):
+        self._validate(pandas_obj)
+        self._obj = pandas_obj
+
+    @staticmethod
+    def _validate(obj):
+        """verify there is a column latitude and a column longitude"""
+        if "intensity" not in obj.columns or "chr" not in obj.columns:
+            raise AttributeError("Must have all needed columns")
+        if not isinstance(obj.index, pd.IntervalIndex):
+            if "start_locus" not in obj.columns and "end_locus" not in obj.columns:
+                raise AttributeError("Index and columns not in BedGraph format")
+        else:
+            assert obj.index.name == 'locus'
+
+    @property
+    def center(self):
+        left = self._obj.index.left
+        right = self._obj.index.right
+        return (right - left) / 2
+
+    def index_to_columns(self):
+        if "start_locus" in self._obj.columns and "end_locus" in self._obj.columns:
+            return self
+        self._obj.loc[:, "start_locus"] = self._obj.index.left
+        self._obj.loc[:, "end_locus"] = self._obj.index.right
+        self._obj = self._obj.reset_index().drop("locus", axis=1)
+        return self._obj
+
+    def columns_to_index(self):
+        if self._obj.index.name == "locus":
+            return self._obj
+        self._obj.loc[:, "locus"] = pd.IntervalIndex.from_arrays(
+            self._obj.loc[:, "start_locus"],
+            self._obj.loc[:, "end_locus"],
+            closed="left",
+            name="locus",
+        )
+        self._obj = self._obj.set_index("locus").drop(
+            ["start_locus", "end_locus"], axis=1
+        )
+        return self._obj
+
+    def add_chr(self, chr_: str = "chr15"):
+        if "chr" in self._obj.columns:
+            self._obj = self._obj.astype({'chr': 'category'})
+            return self._obj
+        self._obj.loc[:, "chr"] = chr_
+        self._obj = self._obj.astype({'chr': 'category'})
+        return self._obj
+
+    def serialize(self, fname: pathlib.Path, chr_: Optional[str] = None):
+        if not chr_:
+            chr_ = self._obj.iloc[0].loc['chr']
+        self.add_chr(chr_).index_to_columns().reindex(
+            ["chr", "start_locus", "end_locus", "intensity"], axis=1
+        ).to_csv(fname, sep="\t", header=None, index=False)
 
 
 class BedGraphFile:
@@ -160,11 +227,13 @@ class BedGraphFile:
 
 
 if __name__ == "__main__":
-    bed = BedGraphFile(
-        pathlib.Path(
-            "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/68500000_68750000.threshold100.BEDgraph"
-        )
-    )
-    bed.add_center_locus()
-    bed.convert_df_to_da()
-    print(bed.dataarray.coords["molid"])
+    # bed = BedGraphFile(
+    #     pathlib.Path(
+    #         "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/68500000_68750000.threshold100.BEDgraph"
+    #     )
+    # )
+    # bed.add_center_locus()
+    # bed.convert_df_to_da()
+    # print(bed.dataarray.coords["molid"])
+    bg = pd.DataFrame({"a": 1}, index=[0])
+    bg.bg
