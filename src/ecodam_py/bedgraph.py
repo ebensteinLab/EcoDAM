@@ -1,12 +1,12 @@
 import pathlib
-from typing import Optional
+import multiprocessing
+from typing import Optional, Tuple, List, Iterable
 
+import pybedtools
 import numpy as np
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 import xarray as xr
-import plotly.express as px
+import numba
 
 
 @pd.api.extensions.register_dataframe_accessor("bg")
@@ -29,7 +29,7 @@ class BedGraphAccessor:
             if "start_locus" not in obj.columns and "end_locus" not in obj.columns:
                 raise AttributeError("Index and columns not in BedGraph format")
         else:
-            assert obj.index.name == 'locus'
+            assert obj.index.name == "locus"
 
     @property
     def center(self):
@@ -39,40 +39,268 @@ class BedGraphAccessor:
 
     def index_to_columns(self):
         if "start_locus" in self._obj.columns and "end_locus" in self._obj.columns:
-            return self
-        self._obj.loc[:, "start_locus"] = self._obj.index.left
-        self._obj.loc[:, "end_locus"] = self._obj.index.right
-        self._obj = self._obj.reset_index().drop("locus", axis=1)
-        return self._obj
+            return self._obj
+        obj = self._obj.copy()
+        obj.loc[:, "start_locus"] = obj.index.left
+        obj.loc[:, "end_locus"] = obj.index.right
+        obj = obj.reset_index().drop("locus", axis=1)
+        return obj
 
     def columns_to_index(self):
         if self._obj.index.name == "locus":
             return self._obj
-        self._obj.loc[:, "locus"] = pd.IntervalIndex.from_arrays(
-            self._obj.loc[:, "start_locus"],
-            self._obj.loc[:, "end_locus"],
+        obj = self._obj.copy()
+        obj.loc[:, "locus"] = pd.IntervalIndex.from_arrays(
+            obj.loc[:, "start_locus"],
+            obj.loc[:, "end_locus"],
             closed="left",
             name="locus",
         )
-        self._obj = self._obj.set_index("locus").drop(
-            ["start_locus", "end_locus"], axis=1
-        )
-        return self._obj
+        obj = obj.set_index("locus").drop(["start_locus", "end_locus"], axis=1)
+        return obj
 
     def add_chr(self, chr_: str = "chr15"):
-        if "chr" in self._obj.columns:
-            self._obj = self._obj.astype({'chr': 'category'})
-            return self._obj
-        self._obj.loc[:, "chr"] = chr_
-        self._obj = self._obj.astype({'chr': 'category'})
-        return self._obj
+        obj = self._obj.copy()
+        if "chr" in obj.columns:
+            obj = obj.astype({"chr": "category"})
+            return obj
+        obj.loc[:, "chr"] = chr_
+        obj = obj.astype({"chr": "category"})
+        return obj
 
-    def serialize(self, fname: pathlib.Path, chr_: Optional[str] = None):
-        if not chr_:
-            chr_ = self._obj.iloc[0].loc['chr']
-        self.add_chr(chr_).index_to_columns().reindex(
+    def serialize(self, fname: pathlib.Path, mode: str = "w"):
+        """Writes the BedGraph to disk"""
+        self.index_to_columns().reindex(
             ["chr", "start_locus", "end_locus", "intensity"], axis=1
-        ).to_csv(fname, sep="\t", header=None, index=False)
+        ).to_csv(fname, sep="\t", header=None, index=False, mode=mode)
+
+    def unweighted_overlap(
+        self, other: pd.DataFrame
+    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """Find the overlapping parts of self and other and return these areas.
+
+        This method looks for overlapping parts of the two BedGraph DFs and
+        returns only the relevant slices of these two objects. The overlap is
+        called 'unweighted' because it considers an area to be overlapping even
+        if a single BP overlaps between the two loci. This might seem odd, but
+        it's helpful since we usually work with BedGraph files that have the
+        same coordinates, so this method is good enough. Use the (slower)
+        'weighted_overlap' method if you need to assert that the overlap is
+        signifanct in terms of BP counts.
+
+        Parameters
+        ----------
+        other : pd.DataFrame
+            A BedGraph DF
+
+        Returns
+        -------
+        (pd.DataFrame, pd.DataFrame)
+            The 'self' and 'other' DFs only at the rows that overlap
+        """
+        obj = self.columns_to_index()
+        other = other.bg.columns_to_index()
+        selfidx, otheridx = [], []
+        for idx, interval in enumerate(obj.index):
+            overlapping_idx = np.where(other.index.overlaps(interval))[0]
+            if overlapping_idx.size > 0:
+                otheridx.append(overlapping_idx[0])
+                selfidx.append(idx)
+        return obj.iloc[selfidx], other.iloc[otheridx]
+
+    def weighted_overlap(
+        self, other: pd.DataFrame, overlap_pct: float = 0.75
+    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """Find the overlapping parts of the two DFs with at least 'overlap_pct'
+        amount of overlap.
+
+        In the first phase of this method, the two DFs are put on the same
+        coordinates so that they could be compared in a viable manner.
+        Currently the way its done is to move them to 1bp resolution which
+        automatically assists in these types of calculations. The 1bp
+        resolution data is masked data, i.e. the 'intensity' values can only be
+        0 or 1.
+
+        Then the DFs are multiplied and grouped by their previous starts and
+        ends, i.e. each group is now a specified loci in the original data.
+        Using a groupby operation and a mean calculation we see which group's
+        average is higher than the given 'overlap_pct' value, and if it is we
+        mark that group as overlapping.
+
+        Parameters
+        ----------
+        other : pd.DataFrame
+            A DF with the relevant data
+        overlap_pct : float, optional
+            The percentage of loci that should overlap between the two datasets
+
+        Returns
+        -------
+        (pd.DataFrame, pd.DataFrame)
+            Only the overlapping areas from the self and other DFs
+        """
+        self_even, other_even = put_dfs_on_even_grounds(
+            [self._obj.copy(), other.copy()]
+        )
+        self_even, other_even = pad_with_zeros(self_even, other_even)
+        self_at_1bp, self_groups = intervals_to_1bp_mask(
+            self_even.start_locus.to_numpy(),
+            self_even.end_locus.to_numpy(),
+            self_even.index.to_numpy(),
+        )
+        other_at_1bp, other_groups = intervals_to_1bp_mask(
+            other_even.start_locus.to_numpy(),
+            other_even.end_locus.to_numpy(),
+            other_even.index.to_numpy(),
+        )
+        unified = self_at_1bp * other_at_1bp
+        means = (
+            pd.DataFrame({"group": other_groups, "unified": unified})
+            .groupby("group")
+            .mean()
+        )
+        assert len(means) == len(other_even)
+        means = means.query("unified > @overlap_pct")
+        other_result = other_even.loc[means.index, :]
+        means = (
+            pd.DataFrame({"group": self_groups, "unified": unified})
+            .groupby("group")
+            .mean()
+        )
+        assert len(means) == len(self_even)
+        means = means.query("unified > @overlap_pct")
+        self_result = self_even.loc[means.index, :]
+        return self_result, other_result
+
+    def to_1bp_resolution(self, multi_chrom=True) -> pd.DataFrame:
+        """Changes the coordinates of the given DF to have 1bp resolution."""
+        obj = self.index_to_columns()
+        if multi_chrom:
+            grouped = obj.groupby("chr", as_index=False)
+            with multiprocessing.Pool() as pool:
+                result = pool.starmap(self._single_chr_to_1bp, grouped)
+            return pd.concat(result, ignore_index=False, axis=0)
+        else:
+            return self._single_chr_to_1bp("", obj)
+
+    @staticmethod
+    def _single_chr_to_1bp(chr_group: str, obj: pd.DataFrame) -> pd.DataFrame:
+        _, groups = intervals_to_1bp_mask(
+            obj.start_locus.to_numpy().copy(), obj.end_locus.to_numpy().copy()
+        )
+        starts = np.arange(
+            obj.loc[:, "start_locus"].iloc[0], obj.loc[:, "end_locus"].iloc[-1]
+        )
+        ends = starts + 1
+        chr_ = obj.loc[:, "chr"].iloc[groups - 1]
+        intensity = obj.loc[:, "intensity"].iloc[groups - 1]
+        return pd.DataFrame(
+            {
+                "chr": chr_,
+                "start_locus": starts,
+                "end_locus": ends,
+                "intensity": intensity,
+            }
+        ).astype({"chr": "category"})
+
+
+def pad_with_zeros(nfr: pd.DataFrame, chrom: pd.DataFrame):
+    """Adds zero entries for loci which are not included in one of the given
+    DFs"""
+    if nfr.start_locus.iloc[0] < chrom.start_locus.iloc[0]:
+        dup = chrom.iloc[0].copy()
+        dup.start_locus = nfr.start_locus.iloc[0]
+        dup.end_locus = chrom.start_locus.iloc[0]
+        dup.intensity = 0
+        chrom = pd.concat([dup.to_frame().T, chrom], axis=0, ignore_index=True).astype(
+            {"start_locus": np.uint64, "end_locus": np.uint64}
+        )
+    elif nfr.start_locus.iloc[0] > chrom.start_locus.iloc[0]:
+        dup = nfr.iloc[0].copy()
+        dup.start_locus = chrom.start_locus.iloc[0]
+        dup.end_locus = nfr.start_locus.iloc[0]
+        dup.intensity = 0
+        nfr = pd.concat([dup.to_frame().T, nfr], axis=0, ignore_index=True).astype(
+            {"start_locus": np.uint64, "end_locus": np.uint64}
+        )
+
+    if nfr.end_locus.iloc[-1] < chrom.end_locus.iloc[-1]:
+        dup = nfr.iloc[-1].copy()
+        dup.start_locus = nfr.end_locus.iloc[-1]
+        dup.end_locus = chrom.end_locus.iloc[-1]
+        dup.intensity = 0
+        nfr = pd.concat([nfr, dup.to_frame().T], axis=0, ignore_index=True).astype(
+            {"start_locus": np.uint64, "end_locus": np.uint64}
+        )
+    elif nfr.end_locus.iloc[-1] > chrom.end_locus.iloc[-1]:
+        dup = chrom.iloc[-1].copy()
+        dup.start_locus = chrom.end_locus.iloc[-1]
+        dup.end_locus = nfr.end_locus.iloc[-1]
+        dup.intensity = 0
+        chrom = pd.concat([chrom, dup.to_frame().T], axis=0, ignore_index=True).astype(
+            {"start_locus": np.uint64, "end_locus": np.uint64}
+        )
+    return nfr, chrom
+
+
+@numba.njit(cache=True, parallel=True)
+def intervals_to_1bp_mask(
+    start: np.ndarray,
+    end: np.ndarray,
+    orig_groups: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Generate a new 1bp BedGraph and keep information of the original
+    distribution and sources of data.
+     """
+    length = end[-1] - start[0]
+    mask = np.zeros(length, dtype=np.uint8)
+    groups = np.zeros(length, dtype=np.uint64)
+    end -= start[0]
+    start -= start[0]
+    one = np.uint8(1)
+    for idx in numba.prange(len(start)):
+        st = start[idx]
+        en = end[idx]
+        mask[st:en] = one
+        groups[st:en] = orig_groups[idx]
+    return mask, groups
+
+
+def _trim_start_end(data: pd.DataFrame, start: int, end: int):
+    """Cuts the data so that it starts at start and ends at end.
+
+    The values refer to the 'start_locus' column of the data DataFrame.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        Data before trimming
+    start, end : int
+        Values from 'start_locus' to cut by
+
+    Returns
+    -------
+    pd.DataFrame
+        Trimmed data
+    """
+    start_idx = data.loc[:, "start_locus"].searchsorted(start)
+    end_idx = data.loc[:, "start_locus"].searchsorted(end, side="left")
+    return data.iloc[start_idx:end_idx, :]
+
+
+def put_dfs_on_even_grounds(dfs: Iterable[pd.DataFrame]) -> Iterable[pd.DataFrame]:
+    """Asserts overlap of all given DataFrames.
+
+    An accompanying function to 'put_on_even_grounds' that does the heavy
+    lifting.
+    """
+    dfs = list(dfs)
+    starts = (data.start_locus.iloc[0] for data in dfs)
+    unified_start = max(starts)
+    ends = (data.end_locus.iloc[-1] for data in dfs)
+    unified_end = min(ends)
+    new_dfs = (_trim_start_end(data, unified_start, unified_end) for data in dfs)
+    return new_dfs
 
 
 class BedGraphFile:
@@ -227,13 +455,6 @@ class BedGraphFile:
 
 
 if __name__ == "__main__":
-    # bed = BedGraphFile(
-    #     pathlib.Path(
-    #         "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/68500000_68750000.threshold100.BEDgraph"
-    #     )
-    # )
-    # bed.add_center_locus()
-    # bed.convert_df_to_da()
-    # print(bed.dataarray.coords["molid"])
-    bg = pd.DataFrame({"a": 1}, index=[0])
-    bg.bg
+    nfr_all_chrom = pathlib.Path(
+        "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/ENCFF240YRV.sorted.bedgraph"
+    )

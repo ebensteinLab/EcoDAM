@@ -19,29 +19,28 @@ import matplotlib.pyplot as plt
 import scipy.stats
 import scipy.fftpack
 
-from ecodam_py.bedgraph import BedGraphFile, BedGraphAccessor
+from ecodam_py.bedgraph import (
+    BedGraphFile,
+    BedGraphAccessor,
+    put_dfs_on_even_grounds,
+    pad_with_zeros,
+    intervals_to_1bp_mask,
+)
 
 
-def _trim_start_end(data: pd.DataFrame, start: int, end: int):
-    """Cuts the data so that it starts at start and ends at end.
-
-    The values refer to the 'start_locus' column of the data DataFrame.
-
-    Parameters
-    ----------
-    data : pd.DataFrame
-        Data before trimming
-    start, end : int
-        Values from 'start_locus' to cut by
-
-    Returns
-    -------
-    pd.DataFrame
-        Trimmed data
-    """
-    start_idx = data.loc[:, "start_locus"].searchsorted(start)
-    end_idx = data.loc[:, "start_locus"].searchsorted(end, side="right")
-    return data.iloc[start_idx:end_idx, :]
+def read_bedgraph(fname: pathlib.Path) -> pd.DataFrame:
+    fname = pathlib.Path(str(fname))
+    assert fname.exists()
+    return (
+        pd.read_csv(
+            fname,
+            sep="\t",
+            header=None,
+            names=["chr", "start_locus", "end_locus", "intensity"],
+        )
+        .astype({"chr": "category"})
+        .dropna()
+    )
 
 
 def put_on_even_grounds(beds: List[BedGraphFile]) -> List[BedGraphFile]:
@@ -65,20 +64,6 @@ def put_on_even_grounds(beds: List[BedGraphFile]) -> List[BedGraphFile]:
     for bed, new_df in zip(beds, new_dfs):
         bed.data = new_df
     return beds
-
-
-def put_dfs_on_even_grounds(dfs: List[pd.DataFrame]) -> List[pd.DataFrame]:
-    """Asserts overlap of all given DataFrames.
-
-    An accompanying function to 'put_on_even_grounds' that does the heavy
-    lifting.
-    """
-    starts = [data.start_locus.iloc[0] for data in dfs]
-    unified_start = max(starts)
-    ends = [data.end_locus.iloc[-1] for data in dfs]
-    unified_end = min(ends)
-    new_dfs = [_trim_start_end(data, unified_start, unified_end) for data in dfs]
-    return new_dfs
 
 
 def convert_to_intervalindex(beds: List[BedGraphFile]) -> List[BedGraphFile]:
@@ -171,7 +156,9 @@ def plot_bg(eco, naked, atac):
     return ax
 
 
-def find_closest_diff(eco: pd.Series, atac: pd.Series, thresh: float = 0.5) -> Tuple[pd.Series, pd.Series]:
+def find_closest_diff(
+    eco: pd.Series, atac: pd.Series, thresh: float = 0.5
+) -> Tuple[pd.Series, pd.Series]:
     """Subtracts the two given tracks and returns them only at the locations
     closer than thresh.
 
@@ -280,12 +267,44 @@ def concat_clusters(
     return clustered_eco, clustered_atac
 
 
-def normalize_with_site_density(naked: BedGraphFile, theo: BedGraphFile) -> pd.DataFrame:
-    norm_by = 1 / (theo.data.loc[:, "intensity"] + 1)
-    #     no_sites = theo.data.intensity == 0
-    #     normalized_naked_data = (naked.data.loc[~no_sites, "intensity"] / norm_by).to_frame()
-    normalized_naked_data = (naked.data.loc[:, "intensity"] / norm_by).to_frame()
-    return normalized_naked_data
+def normalize_with_site_density(
+    chrom: pd.DataFrame, naked: pd.DataFrame, theo: pd.DataFrame
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    Use the site density as supplied in the theoretical DF to normalize the
+    values in the other two DFs.
+
+    First we generate the mask that will be used to discard unneeded events.
+    The mean of the rest of the data is then normalized to one, since the units
+    are arbitrary and it's easier to work with these values (the theo values
+    are relatively low). Then we can apply the same mask to the rest of the
+    data and normalize it by their corresponding theoretical value.
+
+    Parameters
+    ----------
+    chrom, naked : pd.DataFrame
+        The data to be normalized
+    theo : pd.DataFrame
+        The data we normalize with
+
+    Returns
+    -------
+    (pd.DataFrame, pd.DataFrame, pd.DataFrame)
+        The normalized DFs only at the relevant locations after normalization
+    """
+    quant = theo.intensity.quantile(0.1)
+    blacklist_mask = theo.intensiy.isna() | theo.query('intensity <= @quant').intensity
+    theo = theo.loc[~blacklist_mask, :]
+    chrom = chrom.loc[~blacklist_mask, :]
+    naked = naked.loc[~blacklist_mask, :]
+
+    theo.loc[:, "intensity"] = theo.loc[:, "intensity"] / theo.loc[:, 'intensity'].mean()
+
+    norm_by = 1 / (theo.data.loc[:, "intensity"])
+    chrom.loc[:, "intensity"] = (chrom.loc[:, "intensity"] / norm_by)
+    naked.loc[:, "intensity"] = (naked.loc[:, "intensity"] / norm_by)
+
+    return chrom, naked, theo
 
 
 def preprocess_bedgraph(paths: List[pathlib.Path]) -> List[BedGraphFile]:
@@ -459,7 +478,9 @@ def reindex_theo_data(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.DataFrame:
     return new_theo
 
 
-def serialize_bedgraph(bed: BedGraphFile, path: pathlib.Path, chr_: str = "chr15"):
+def serialize_bedgraph(
+    bed: BedGraphFile, path: pathlib.Path, chr_: str = "chr15", mode: str = "w"
+):
     data = bed.data
     data.loc[:, "left"] = data.index.left
     data.loc[:, "right"] = data.index.right
@@ -470,6 +491,7 @@ def serialize_bedgraph(bed: BedGraphFile, path: pathlib.Path, chr_: str = "chr15
         sep="\t",
         header=None,
         index=False,
+        mode=mode,
     )
 
 
@@ -520,7 +542,7 @@ def get_index_values_for_nfr(
 ) -> pd.DataFrame:
     """Iterate over the NFR and extract the data indices at these points.
 
-    The peaks DF contains the start and end coordintes of the nucleosome-free
+    The nfr DF contains the start and end coordintes of the nucleosome-free
     regions of the chromosome. Our goal is to capture the same areas from the
     second DF, usually the chromatin one, so that we'd see whether there's any
     correlation between the ATAC NFR and the chromatin values.
@@ -550,10 +572,10 @@ def get_index_values_for_nfr(
     """
     nfr_even, chromatin_even = put_dfs_on_even_grounds([nfr.copy(), chrom.copy()])
     nfr_even, chromatin_even = pad_with_zeros(nfr_even, chromatin_even)
-    nfr_at_1bp, nfr_groups = intervals_to_mask(
+    nfr_at_1bp, nfr_groups = intervals_to_1bp_mask(
         nfr_even.start_locus.to_numpy(), nfr_even.end_locus.to_numpy()
     )
-    chromatin_at_1bp, chrom_groups = intervals_to_mask(
+    chromatin_at_1bp, chrom_groups = intervals_to_1bp_mask(
         chromatin_even.start_locus.to_numpy(), chromatin_even.end_locus.to_numpy()
     )
     unified = nfr_at_1bp * chromatin_at_1bp
@@ -565,61 +587,6 @@ def get_index_values_for_nfr(
     assert len(means) == (len(chrom) + 1)
     means = means.query("unified > @open_pct")
     return chrom.iloc[means.index - 1, :]
-
-
-def pad_with_zeros(nfr: pd.DataFrame, chrom: pd.DataFrame):
-    if nfr.start_locus.iloc[0] < chrom.start_locus.iloc[0]:
-        dup = chrom.iloc[0].copy()
-        dup.start_locus = nfr.start_locus.iloc[0]
-        dup.end_locus = chrom.start_locus.iloc[0]
-        dup.intensity = 0
-        chrom = pd.concat([dup.to_frame().T, chrom], axis=0, ignore_index=True).astype(
-            {"start_locus": np.uint64, "end_locus": np.uint64}
-        )
-    elif nfr.start_locus.iloc[9] > chrom.start_locus.iloc[0]:
-        dup = nfr.iloc[0].copy()
-        dup.start_locus = chrom.start_locus.iloc[0]
-        dup.end_locus = nfr.start_locus.iloc[0]
-        dup.intensity = 0
-        nfr = pd.concat([dup.to_frame().T, nfr], axis=0, ignore_index=True).astype(
-            {"start_locus": np.uint64, "end_locus": np.uint64}
-        )
-
-    if nfr.end_locus.iloc[-1] < chrom.end_locus.iloc[-1]:
-        dup = nfr.iloc[-1].copy()
-        dup.start_locus = nfr.end_locus.iloc[-1]
-        dup.end_locus = chrom.end_locus.iloc[-1]
-        dup.intensity = 0
-        nfr = pd.concat([nfr, dup.to_frame().T], axis=0, ignore_index=True).astype(
-            {"start_locus": np.uint64, "end_locus": np.uint64}
-        )
-    elif nfr.end_locus.iloc[-1] > chrom.end_locus.iloc[-1]:
-        dup = chrom.iloc[-1].copy()
-        dup.start_locus = chrom.end_locus.iloc[-1]
-        dup.end_locus = nfr.end_locus.iloc[-1]
-        dup.intensity = 0
-        chrom = pd.concat([chrom, dup.to_frame().T], axis=0, ignore_index=True).astype(
-            {"start_locus": np.uint64, "end_locus": np.uint64}
-        )
-    return nfr, chrom
-
-
-@numba.njit(cache=True, parallel=True)
-def intervals_to_mask(
-    start: np.ndarray, end: np.ndarray
-) -> Tuple[np.ndarray, np.ndarray]:
-    length = end[-1] - start[0]
-    mask = np.zeros(length, dtype=np.uint8)
-    groups = np.zeros(length, dtype=np.uint64)
-    end -= start[0]
-    start -= start[0]
-    one = np.uint8(1)
-    for idx in numba.prange(len(start)):
-        st = start[idx]
-        en = end[idx]
-        mask[st:en] = one
-        groups[st:en] = idx + 1
-    return mask, groups
 
 
 def _upsample_df(data: pd.DataFrame) -> pd.DataFrame:

@@ -1,23 +1,23 @@
 """
 This script receives a BedGraphFile file as input and smoothes it out using
-convolution with a window of the user's choosing.
+convolution with a window of the user's choosing. It also contains
+supplementary functionality such as changing the loci coordinates of the given
+BedGraph.
 """
 import pathlib
 from enum import Enum
 from typing import Callable, MutableMapping, Tuple
 
+import toml
 import pandas as pd
 import numba
 import numpy as np
 import scipy.signal
 from magicgui import magicgui
-from scipy.signal.windows.windows import gaussian
+from magicgui.tqdm import tqdm
+from appdirs import user_cache_dir
 
 from ecodam_py.bedgraph import BedGraphFile
-from ecodam_py.eco_atac_normalization import (
-    serialize_bedgraph,
-    convert_to_intervalindex,
-)
 
 
 def _boxcar(size, *args):
@@ -138,8 +138,8 @@ def _pull_index_data(data: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray, int]:
     Tuple[np.ndarray, np.ndarray, int]
         Starting loci, ending loci, and total basepairs between them
     """
-    start_indices = data["start_locus"].to_numpy()
-    end_indices = data["end_locus"].to_numpy()
+    start_indices = data.loc[:, "start_locus"].to_numpy()
+    end_indices = data.loc[:, "end_locus"].to_numpy()
     data_length = end_indices[-1] - start_indices[0]
     return start_indices, end_indices, data_length
 
@@ -323,39 +323,52 @@ def generate_resampled_coords(
     ends = np.arange(start + step, end + step, step, dtype=np.int64)
     return starts, ends
 
-
 @magicgui(
     layout="form",
     call_button="Smooth",
     result_widget=True,
     main_window=True,
+    filename={"label": "Filename"},
+    reference_filename={"label": "Reference Filename"},
+    window={"label": "Smoothing window type"},
+    size_in_bp={"label": "Window size [bp]"},
+    gaussian_std={"label": "Gaussian window st. dev."},
+    overlapping_bp={"label": "Overlapping amount [bp]"},
+    normalize_to_reference={"text": "Normalize to reference?"},
+    resample_data_with_overlap={"text": "Resample data with overlap?"},
 )
 def smooth_bedgraph(
     filename: pathlib.Path,
-    reference_filename: pathlib.Path = pathlib.Path(
-        "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/original_data_after_normalization/ATAC_rep1to3_Fold_change_over_control.chr15_after_normalization.bedgraph"
-    ),
-    window: WindowStr = WindowStr.Boxcar,
+    reference_filename: pathlib.Path,
+    window: WindowStr = WindowStr.Gaussian,
     size_in_bp: str = "1000",
-    gaussian_std: str = "0",
-    overlapping_bp: str = "0",
+    gaussian_std: str = "100",
+    overlapping_bp: str = "100",
     normalize_to_reference: bool = False,
     resample_data_with_overlap: bool = False,
 ):
     """Smoothes the given BedGraphFile data and writes it back to disk.
 
-    The BedGraphFile data is smoothed by the given amount and written back to the
-    same directory with a 'smoothed' suffix. The smoothed data coordinates are
-    the same as the data pre-smoothing, unless the normalize_to_reference
-    checkbox is marked, which then requires a reference_filename entry. This
-    entry's loci will serve as the points to which the given filename will be
-    normalized to.
+    The BedGraph data is smoothed by the given amount and written back to the
+    same directory with a 'smoothed' suffix. The smoothing is done with a
+    window shape that can be modified - its type is defined by the 'Window
+    type' option, its end-to-end size by 'Window size' and the Gaussian window
+    can be further modified by defining the standard deviation of it. To cancel
+    smoothing simply set "Window size" to 0.
 
-    If the smoothing window's size is 0 no smoothing will occur. Depending on
-    normalize_to_reference the code can resample the given data to a different
-    set of coordinates. If resample_data_with_overlap is marked then the data will be
-    sampled at fixed intervals irrespective of the original data, with an
-    overlapping factor of "overlapping_bp".
+    By default, the smoothed data coordinates are the same as the data pre-
+    smoothing, unless the 'normalize_to_reference' checkbox is marked, which
+    then requires a 'reference_filename' entry. This entry's loci will serve
+    as the points to which the given filename will be normalized to. Another
+    way to change the resulting data's coordinates is the
+    'resample_data_with_overlap' checkbox, which allows you to resample the
+    data independently of a different data source. When checking this box the
+    "Overlapping amount" entry will deteremine both the overlap between two
+    consecutive windows and the step size (="resolution") of the resulting
+    BedGraph.
+
+    At the end of the computation the "result" row will be filled with the new
+    filename that was created.
 
     Parameters
     ----------
@@ -386,54 +399,57 @@ def smooth_bedgraph(
     size_in_bp = int(size_in_bp)
     gaussian_std = int(gaussian_std)
     overlapping_bp = int(overlapping_bp)
-    resampled = resample_data(bed.data.copy())
-    chr_ = bed.data.chr.iloc[0]
-    if size_in_bp > 0:
-        window_array = WINDOWS[window.value](size_in_bp, gaussian_std)
-        conv_result = smooth(resampled, window_array)
-        new_filename = filename.stem + f"_smoothed_{size_in_bp // 1000}kb"
-    else:
-        conv_result = resampled
-        new_filename = filename.stem
-    if normalize_to_reference:
-        reference = BedGraph(reference_filename, header=False)
-        starts, ends, _ = _pull_index_data(bed.data)
-        reference.data.loc[:, "intensity"] = downsample_smoothed_to_reference(
-            conv_result,
-            reference.data.loc[:, "start_locus"].to_numpy(),
-            reference.data.loc[:, "end_locus"].to_numpy(),
-            starts,
-            ends,
-        )
-        result = convert_to_intervalindex([reference])[0]
-        new_filename += f"_coerced_to_{reference_filename.stem}.bedgraph"
-    elif resample_data_with_overlap:
-        overlapping_bp = size_in_bp // 2 if overlapping_bp == 0 else overlapping_bp
-        starts, ends, _ = _pull_index_data(bed.data)
-        coords = generate_resampled_coords(bed.data, overlapping_bp)
-        result = downsample_smoothed_to_reference(
-            conv_result, coords[0], coords[1], starts, ends
-        )
-        bed.data = pd.DataFrame(
-            {
-                "chr": chr_,
-                "start_locus": coords[0],
-                "end_locus": coords[1],
-                "intensity": result,
-            }
-        ).astype({"chr": "category"})
-        new_filename += f"_resampled_with_{overlapping_bp}_overlapping_bp.bedgraph"
-        result = convert_to_intervalindex([bed])[0]
-    else:
-        bed.data.loc[:, "intensity"] = downsample_smoothed_data(
-            conv_result,
-            bed.data.loc[:, "start_locus"].to_numpy().copy(),
-            bed.data.loc[:, "end_locus"].to_numpy().copy(),
-        )
-        result = convert_to_intervalindex([bed])[0]
-        new_filename += ".bedgraph"
-    new_filename = filename.with_name(new_filename)
-    serialize_bedgraph(result, new_filename, chr_)
+    grouped = bed.data.groupby("chr", as_index=False)
+    for idx, (chr_, data) in tqdm(enumerate(grouped), label="Chromosome #"):
+        if size_in_bp > 0:
+            resampled = resample_data(data.copy())
+            window_array = WINDOWS[window.value](size_in_bp, gaussian_std)
+            conv_result = smooth(resampled, window_array)
+            new_filename = filename.stem + f"_smoothed_{size_in_bp // 1000}kb"
+        else:
+            conv_result = resample_data(data.copy())
+            new_filename = filename.stem
+        if normalize_to_reference:
+            reference = BedGraphFile(reference_filename, header=False)
+            starts, ends, _ = _pull_index_data(data)
+            reference.data.loc[:, "intensity"] = downsample_smoothed_to_reference(
+                conv_result,
+                reference.data.loc[:, "start_locus"].to_numpy(),
+                reference.data.loc[:, "end_locus"].to_numpy(),
+                starts,
+                ends,
+            )
+            result = reference.data.bg.columns_to_index()
+            new_filename += f"_coerced_to_{reference_filename.stem}.bedgraph"
+        elif resample_data_with_overlap:
+            overlapping_bp = size_in_bp // 2 if overlapping_bp == 0 else overlapping_bp
+            starts, ends, _ = _pull_index_data(data)
+            coords = generate_resampled_coords(data, overlapping_bp)
+            result = downsample_smoothed_to_reference(
+                conv_result, coords[0], coords[1], starts, ends
+            )
+            overlap = pd.DataFrame(
+                {
+                    "chr": chr_,
+                    "start_locus": coords[0],
+                    "end_locus": coords[1],
+                    "intensity": result,
+                }
+            ).astype({"chr": "category"})
+            new_filename += f"_resampled_with_{overlapping_bp}_overlapping_bp.bedgraph"
+            result = overlap.bg.columns_to_index()
+        else:
+            data.loc[:, "intensity"] = downsample_smoothed_data(
+                conv_result,
+                data.loc[:, "start_locus"].to_numpy().copy(),
+                data.loc[:, "end_locus"].to_numpy().copy(),
+            )
+            result = data.bg.columns_to_index()
+            new_filename += ".bedgraph"
+        new_filename = filename.with_name(new_filename)
+        if idx == 0:
+            new_filename.unlink(missing_ok=True)
+        result.bg.serialize(new_filename, "a")
     return str(new_filename)
 
 

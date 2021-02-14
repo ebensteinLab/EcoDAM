@@ -51,6 +51,8 @@ INSTALL_REQUIRES = [
     'pybigwig',
     'pybedtools',
     'pysam',
+    'appdirs',
+    'toml'
 ]
 
 ###################################################################
