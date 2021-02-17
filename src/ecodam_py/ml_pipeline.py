@@ -3,8 +3,8 @@ from collections import namedtuple
 
 import pandas as pd
 
-from ecodam_py.bedgraph import BedGraphAccessor, put_dfs_on_even_grounds
-from ecodam_py.eco_atac_normalization import get_index_values_for_nfr, normalize_with_site_density, serialize_bedgraph
+from ecodam_py.bedgraph import BedGraphAccessor, equalize_loci
+from ecodam_py.eco_atac_normalization import get_index_values_for_nfr, normalize_with_site_density, serialize_bedgraph, prepare_site_density_for_norm
 
 
 EcoDamData = namedtuple("EcoDamData", ["chrom", "naked", "theo", "nfr"])
@@ -18,14 +18,27 @@ def serialize_state(data: EcoDamData, tag: str):
 
 def ml_pipeline(chrom, naked, theo, nfr):
     args = EcoDamData(chrom, naked, theo, nfr)
-    with_same_bounds = basic_preprocessing(args)
-    serialize_state(with_same_bounds, 'after_same_bounds')
-    return with_same_bounds
-    # chrom, naked, theo = normalize_with_site_density(
-    #     with_same_bounds.chrom, with_same_bounds.naked, with_same_bounds.theo
-    # )
-    # chrom.loc[:, "intensity"] /= chrom.loc[:, "intensity"].max()
-    # naked.loc[:, "intensity"] /= naked.loc[:, "intensity"].max()
+    equalized_chrom, equalized_theo = equalize_loci(chrom.copy(), theo.copy())
+    mask, norm = prepare_site_density_for_norm(equalized_theo.even)
+    equalized_naked, equalized_theo = equalize_loci(naked, theo)
+    equalized_chrom.even.loc[~mask, "intensity"] *= norm
+    equalized_chrom.even.loc[:, "intensity"] -= equalized_chrom.even.loc[:, "intensity"].min()
+    equalized_chrom.even.loc[mask, "intensity"] = 0
+    equalized_chrom.even.loc[:, "intensity"] /= equalized_chrom.even.loc[:, "intensity"].max()
+    equalized_naked.even.loc[~mask, "intensity"] *= norm
+    equalized_naked.even.loc[:, "intensity"] -= equalized_naked.even.loc[:, "intensity"].min()
+    equalized_naked.even.loc[mask, "intensity"] = 0
+    equalized_naked.even.loc[:, "intensity"] /= equalized_naked.even.loc[:, "intensity"].max()
+    subtraction = equalized_chrom.even.copy()
+    subtraction.loc[:, 'intensity'] = equalized_naked.even.loc[:, 'intensity'] - equalized_chrom.even.loc[:, 'intensity']
+    subtraction = subtraction.dropna(axis=0)
+    subtraction_overlap, nfr_overlap = subtraction.bg.weighted_overlap(nfr.copy())
+
+    return subtraction_overlap, nfr_overlap
+
+
+
+    # serialize_state(with_same_bounds, 'after_same_bounds')
     # subtraction = naked.loc[:, 'intensity'] - chrom.loc[:, 'intensity']
     # subtraction.to_parquet('/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/ml_pipeline/subtraction.pq')
     # subtraction_nfr = get_index_values_for_nfr(with_same_bounds.nfr, subtraction)
@@ -40,9 +53,3 @@ def subtract_min(data: pd.DataFrame) -> pd.DataFrame:
     data.loc[:, 'intensity'] -= min_
     return data
 
-
-def basic_preprocessing(iterable: EcoDamData) -> EcoDamData:
-    min_at_zero = (subtract_min(data) for data in iterable)
-    at1bp = (data.bg.to_1bp_resolution(multi_chrom=False) for data in min_at_zero)
-    with_same_bounds = put_dfs_on_even_grounds(at1bp)
-    return EcoDamData(*with_same_bounds)

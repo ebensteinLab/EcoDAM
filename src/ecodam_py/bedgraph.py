@@ -140,31 +140,26 @@ class BedGraphAccessor:
         (pd.DataFrame, pd.DataFrame)
             Only the overlapping areas from the self and other DFs
         """
-        (
-            self_even,
-            self_at_1bp,
-            self_groups,
-            other_even,
-            other_at_1bp,
-            other_groups,
-        ) = equalize_loci(self._obj.copy(), other.copy())
-        unified = self_at_1bp * other_at_1bp
+        equalized_this, equalized_other = equalize_loci(
+            self._obj.copy(), other.copy()
+        )
+        unified = equalized_this.at_1bp * equalized_other.at_1bp
         means = (
-            pd.DataFrame({"group": other_groups, "unified": unified})
+            pd.DataFrame({"group": equalized_other.groups, "unified": unified})
             .groupby("group")
             .mean()
         )
-        assert len(means) == len(other_even)
+        assert len(means) == len(equalized_other.even)
         means = means.query("unified > @overlap_pct")
-        other_result = other_even.loc[means.index, :]
+        other_result = equalized_other.even.loc[means.index, :]
         means = (
-            pd.DataFrame({"group": self_groups, "unified": unified})
+            pd.DataFrame({"group": equalized_this.groups, "unified": unified})
             .groupby("group")
             .mean()
         )
-        assert len(means) == len(self_even)
+        assert len(means) == len(equalized_this.even)
         means = means.query("unified > @overlap_pct")
-        self_result = self_even.loc[means.index, :]
+        self_result = equalized_this.even.loc[means.index, :]
         return self_result, other_result
 
     def to_1bp_resolution(self, multi_chrom=True) -> pd.DataFrame:
@@ -301,7 +296,9 @@ def put_dfs_on_even_grounds(dfs: Iterable[pd.DataFrame]) -> Iterable[pd.DataFram
 Equalized = namedtuple("Equalized", "even at_1bp groups")
 
 
-def equalize_loci(first: pd.DataFrame, second: pd.DataFrame) -> Tuple[Equalized, Equalized]:
+def equalize_loci(
+    first: pd.DataFrame, second: pd.DataFrame
+) -> Tuple[Equalized, Equalized]:
     self_even, other_even = put_dfs_on_even_grounds([first, second])
     self_even, other_even = pad_with_zeros(self_even, other_even)
     self_at_1bp, self_groups = intervals_to_1bp_mask(
