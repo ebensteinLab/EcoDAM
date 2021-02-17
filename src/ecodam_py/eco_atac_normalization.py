@@ -8,7 +8,7 @@ this project was created.
 """
 import pathlib
 import copy
-from typing import Tuple, List, Union
+from typing import Tuple, List, Union, Iterable
 
 import seaborn as sns
 import numpy as np
@@ -267,6 +267,37 @@ def concat_clusters(
     return clustered_eco, clustered_atac
 
 
+def prepare_site_density_for_norm(theo: pd.DataFrame, quantile: float = 0.1) -> Tuple[pd.Series, pd.DataFrame]:
+    """Generate a correct theoretical data mask for normalization.
+
+    The theoretical data is first filtered so that the low quality data is
+    taken out. Then the rest of the data is normalized so that its mean is one.
+    This is sent, as a mask and as the normalization factor, back to the caller
+    so that it could be arbitrarily applied on other data.
+
+    Parameters
+    ----------
+    theo: pd.DataFrame
+        Site density values
+    quantile : float, optional
+        The quantile that thresholds the data quality. Data below this quantile
+        will be filtered out
+
+    Returns
+    -------
+    blacklist_mask : pd.Series
+        Boolean mask for the relevant parts in the chromosome
+    norm_by : pd.DataFrame
+        Values to multiply with the data for it to be normalized
+    """
+    quant = theo.intensity.quantile(quantile)
+    blacklist_mask = theo.intensity.isna() | theo.intensity <= quant
+    theo = theo.loc[~blacklist_mask, :]
+    theo.loc[:, "intensity"] /= theo.loc[:, 'intensity'].mean()
+    norm_by = 1 / (theo.loc[:, "intensity"])
+    return blacklist_mask, norm_by
+
+
 def normalize_with_site_density(
     chrom: pd.DataFrame, naked: pd.DataFrame, theo: pd.DataFrame
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -292,17 +323,12 @@ def normalize_with_site_density(
     (pd.DataFrame, pd.DataFrame, pd.DataFrame)
         The normalized DFs only at the relevant locations after normalization
     """
-    quant = theo.intensity.quantile(0.1)
-    blacklist_mask = theo.intensiy.isna() | theo.query('intensity <= @quant').intensity
-    theo = theo.loc[~blacklist_mask, :]
+    blacklist_mask, norm_by = prepare_site_density_for_norm(theo.copy())
+
     chrom = chrom.loc[~blacklist_mask, :]
     naked = naked.loc[~blacklist_mask, :]
-
-    theo.loc[:, "intensity"] = theo.loc[:, "intensity"] / theo.loc[:, 'intensity'].mean()
-
-    norm_by = 1 / (theo.data.loc[:, "intensity"])
-    chrom.loc[:, "intensity"] = (chrom.loc[:, "intensity"] / norm_by)
-    naked.loc[:, "intensity"] = (naked.loc[:, "intensity"] / norm_by)
+    chrom.loc[:, "intensity"] = (chrom.loc[:, "intensity"] * norm_by)
+    naked.loc[:, "intensity"] = (naked.loc[:, "intensity"] * norm_by)
 
     return chrom, naked, theo
 
@@ -687,3 +713,29 @@ def normalize_with_theo(data: pd.Series, theo: pd.DataFrame) -> pd.DataFrame:
     norm_by = theo.intensity.dropna()
     norm_by = 1 / norm_by.loc[norm_by != 0]
     return data * norm_by
+
+
+def iter_over_bedgraphs_chromosomes(*args) -> Iterable[List[pd.DataFrame]]:
+    """Constructs an chromosome iterator for each DF in the given args.
+
+    The function can take one or more DFs with the chromosome column and bind
+    them together for a generator that only yields the relevant rows of each DF
+    every time.
+
+    Parameters
+    ----------
+    One or more DFs with the 'chr' column
+
+    Returns
+    -------
+    An iterator that yields a tuple of the DFs only at a certain chromosome
+    """
+    grouped = [ df.groupby('chr', as_index=False) for df in args ]
+    if len(grouped) == 1:
+        return grouped
+    for chr_, grp in grouped[0]:
+        try:
+            others = [other.get_group(chr_) for other in grouped[1:]]
+        except KeyError:
+            continue
+        yield [chr_, grp] + others

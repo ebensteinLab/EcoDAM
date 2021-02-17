@@ -1,4 +1,5 @@
 import pathlib
+from collections import namedtuple
 import multiprocessing
 from typing import Optional, Tuple, List, Iterable
 
@@ -139,20 +140,14 @@ class BedGraphAccessor:
         (pd.DataFrame, pd.DataFrame)
             Only the overlapping areas from the self and other DFs
         """
-        self_even, other_even = put_dfs_on_even_grounds(
-            [self._obj.copy(), other.copy()]
-        )
-        self_even, other_even = pad_with_zeros(self_even, other_even)
-        self_at_1bp, self_groups = intervals_to_1bp_mask(
-            self_even.start_locus.to_numpy(),
-            self_even.end_locus.to_numpy(),
-            self_even.index.to_numpy(),
-        )
-        other_at_1bp, other_groups = intervals_to_1bp_mask(
-            other_even.start_locus.to_numpy(),
-            other_even.end_locus.to_numpy(),
-            other_even.index.to_numpy(),
-        )
+        (
+            self_even,
+            self_at_1bp,
+            self_groups,
+            other_even,
+            other_at_1bp,
+            other_groups,
+        ) = equalize_loci(self._obj.copy(), other.copy())
         unified = self_at_1bp * other_at_1bp
         means = (
             pd.DataFrame({"group": other_groups, "unified": unified})
@@ -251,7 +246,7 @@ def intervals_to_1bp_mask(
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Generate a new 1bp BedGraph and keep information of the original
     distribution and sources of data.
-     """
+    """
     length = end[-1] - start[0]
     mask = np.zeros(length, dtype=np.uint8)
     groups = np.zeros(length, dtype=np.uint64)
@@ -301,6 +296,27 @@ def put_dfs_on_even_grounds(dfs: Iterable[pd.DataFrame]) -> Iterable[pd.DataFram
     unified_end = min(ends)
     new_dfs = (_trim_start_end(data, unified_start, unified_end) for data in dfs)
     return new_dfs
+
+
+Equalized = namedtuple("Equalized", "even at_1bp groups")
+
+
+def equalize_loci(first: pd.DataFrame, second: pd.DataFrame) -> Tuple[Equalized, Equalized]:
+    self_even, other_even = put_dfs_on_even_grounds([first, second])
+    self_even, other_even = pad_with_zeros(self_even, other_even)
+    self_at_1bp, self_groups = intervals_to_1bp_mask(
+        self_even.start_locus.to_numpy(),
+        self_even.end_locus.to_numpy(),
+        self_even.index.to_numpy(),
+    )
+    other_at_1bp, other_groups = intervals_to_1bp_mask(
+        other_even.start_locus.to_numpy(),
+        other_even.end_locus.to_numpy(),
+        other_even.index.to_numpy(),
+    )
+    return Equalized(self_even, self_at_1bp, self_groups), Equalized(
+        other_even, other_at_1bp, other_groups
+    )
 
 
 class BedGraphFile:
