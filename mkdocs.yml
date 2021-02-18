@@ -1,2 +1,15 @@
 site_name: EcoDAM
-theme: readthedocs
+
+repo_url: https://github.com/ebensteinLab/EcoDAM/
+
+nav:
+    - Home: index.md
+    - User Guide:
+        - BedGraphAccessor: BedGraphAccessor.md
+    - API: mkapi/api/src/ecodam_py
+    - Tools: tools.md
+    - About: about.md
+
+plugins:
+    - search
+    - mkapi

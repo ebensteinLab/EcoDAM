@@ -52,7 +52,8 @@ INSTALL_REQUIRES = [
     'pybedtools',
     'pysam',
     'appdirs',
-    'toml'
+    'toml',
+    'mkapi',
 ]
 
 ###################################################################
