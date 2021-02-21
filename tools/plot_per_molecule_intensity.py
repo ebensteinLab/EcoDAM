@@ -128,8 +128,13 @@ def _show_single_file(filename, show_image, show_traces):
         fig.show()
 
 
-@magicgui(call_button="Show", layout="form")
-def main(filename: pathlib.Path, show_image: bool = True, show_traces: bool = True, parse_directory: bool = False):
+@magicgui(call_button="Show", layout="form", main_window=True, filename={'label': 'Filename'}, parse_directiory={'label': 'Process entire folder?'})
+def show_files(filename: pathlib.Path, show_image: bool = True, show_traces: bool = True, parse_directory: bool = False):
+    """Plot the BED data interactively.
+
+    Plots the given data - a file or a folder of files - with an interactive
+    plot that allows for inspection of the trends in the given loci.
+    """
     if parse_directory:
         for file in filename.parent.glob(f"*{filename.suffix}"):
             try:
@@ -143,6 +148,7 @@ def main(filename: pathlib.Path, show_image: bool = True, show_traces: bool = Tr
 
 
 if __name__ == "__main__":
+    # Example usage as a function:
     # filename = pathlib.Path(
     #     "tests/tests_data/chr23 between 18532000 to 19532000.BEDgraph"
     #     "/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/68500000_68750000.threshold50.BEDgraph"
@@ -155,4 +161,4 @@ if __name__ == "__main__":
     # plt.show(block=False)
     # fig.show()
 
-    main.show(run=True)
+    show_files.show(run=True)

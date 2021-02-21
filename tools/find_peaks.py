@@ -11,12 +11,36 @@ from ecodam_py.eco_atac_normalization import write_intindex_to_disk
     layout="form",
     call_button="Find Peaks",
     result_widget=True,
+    main_window=True,
+    filename={"label": "Filename"},
+    prominence={"label": "Peak prominence"},
+    distance={"label": "Minimal peak distance [rows]", 'min': 1, 'max': 1_000_000},
 )
 def find_peaks(
     filename: pathlib.Path,
     prominence: float = 2.0,
     distance: int = 2,
 ):
+    """Locate peaks in the given BedGraph.
+
+    Using a straightforward peak-finding algorithm, this tool writes back to
+    disk a BedGraph file that only contains the loci that were detected as
+    peaks in the given dataset.
+
+    The prominence of the peaks and the minimal distance between each pair of
+    peaks in controllable. The new BedGraph is written to disk in the original
+    file's folder, with a '_peaks' suffix.
+
+    Parameters
+    ----------
+    filename : pathlib.Path
+        BedGraph for finding peaks
+    prominence : float, optional
+        Peak prominence, usually between 0 and 100
+    distance : int, optional
+        Minimal number of entries (=rows in the data) that separate between
+        consecutive peaks
+    """
     if not filename.exists():
         return "Filename doesn't exist"
     data = preprocess_data(filename)
