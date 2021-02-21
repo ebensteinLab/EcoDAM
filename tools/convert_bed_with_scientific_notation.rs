@@ -1,3 +1,8 @@
+/*
+Change scientific notation numbers (1.2e6) to standard notation (1200000)
+on a per row basis in a BedGraph file. Input file is in line 14 and output
+is in line 11.
+*/
 use std::fs::File;
 use std::io::{self, BufRead, LineWriter, Write};
 use std::path::Path;
@@ -22,8 +27,6 @@ fn main() {
     }
 }
 
-// The output is wrapped in a Result to allow matching on errors
-// Returns an Iterator to the Reader of the lines of the file.
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where P: AsRef<Path>, {
     let file = File::open(filename)?;

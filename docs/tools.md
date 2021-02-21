@@ -20,3 +20,9 @@ As the name implies, this tool can do smoothing-related operations on BedGraphs.
 4. Do a combination of all of the above.
 
 Together these functions are quite powerful - for example this tool was used to smooth out the EcoDAM theoretical value, given at 1 bp resolution, so that it will be more similar to the way the imaging system outputs the data - 1kbp resolution and PSF-induced smearing.
+
+## Convert Scientific Notation
+This Rust script iterates over the rows of the file and changes scientific notation (1.2e6) to regular notation (1200000). Compile and run it using `rustc -O convert_bed_with_scientific_notation.rs && ./convert_bed_with_scientific_notation`.
+
+## Add 'chr' Prefix
+Another Rust script, this time to add a missing `chr` prefix for the given BedGraph, row-wise.

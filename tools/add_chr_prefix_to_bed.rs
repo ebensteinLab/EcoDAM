@@ -1,3 +1,6 @@
+/* Adds the needed 'chr' prefix to the given BedGraph file (line 12) and writes
+to disk a new version, as specified in line 9.
+*/
 use std::fs::File;
 use std::io::{self, BufRead, LineWriter, Write};
 use std::path::Path;

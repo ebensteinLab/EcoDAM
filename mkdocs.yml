@@ -1,4 +1,5 @@
 site_name: EcoDAM
+theme: readthedocs
 
 repo_url: https://github.com/ebensteinLab/EcoDAM/
 
