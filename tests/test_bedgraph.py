@@ -42,10 +42,10 @@ def test_single_chr_to_1bp():
 
 
 def test_weighted_overlap_1bp():
-    starts = np.arange(100)
+    starts = np.arange(100, dtype=np.uint64)
     ends = starts + 1
     first = pd.DataFrame({'chr': 'chr1', 'start_locus': starts, 'end_locus': ends, 'intensity': 1})
-    starts = np.arange(50, 150)
+    starts = np.arange(50, 150, dtype=np.uint64)
     ends = starts + 1
     second = pd.DataFrame({'chr': 'chr1', 'start_locus': starts, 'end_locus': ends, 'intensity': 1})
     first_overlap, second_overlap = first.bg.weighted_overlap(second, overlap_pct=0.75)
@@ -53,11 +53,23 @@ def test_weighted_overlap_1bp():
 
 
 def test_weighted_overlap_not_1bp():
-    starts = np.arange(100, step=10)
+    starts = np.arange(100, step=10, dtype=np.uint64)
     ends = starts + 10
     first = pd.DataFrame({'chr': 'chr1', 'start_locus': starts, 'end_locus': ends, 'intensity': 1})
-    starts = np.arange(50, 150, 10)
+    starts = np.arange(50, 150, 10, dtype=np.uint64)
     ends = starts + 10
     second = pd.DataFrame({'chr': 'chr1', 'start_locus': starts, 'end_locus': ends, 'intensity': 1})
     first_overlap, second_overlap = first.bg.weighted_overlap(second, overlap_pct=0.75)
     pd.testing.assert_frame_equal(first_overlap.reset_index(drop=True), second_overlap.reset_index(drop=True))
+
+
+def test_weighted_overlap_with_gaps():
+    starts = np.array([0, 10, 30, 40], dtype=np.uint64)
+    ends = starts + 10
+    first = pd.DataFrame({'chr': 'chr1', 'start_locus': starts, 'end_locus': ends, 'intensity': 1})
+    starts = np.array([0, 10, 30, 40, 50, 60], dtype=np.uint64)
+    ends = starts + 10
+    second = pd.DataFrame({'chr': 'chr1', 'start_locus': starts, 'end_locus': ends, 'intensity': 1})
+    first_overlap, second_overlap = first.bg.weighted_overlap(second, overlap_pct=0.75)
+    pd.testing.assert_frame_equal(first_overlap.reset_index(drop=True), second_overlap.reset_index(drop=True))
+

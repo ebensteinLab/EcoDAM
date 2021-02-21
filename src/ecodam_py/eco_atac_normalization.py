@@ -38,7 +38,7 @@ def read_bedgraph(fname: pathlib.Path) -> pd.DataFrame:
             header=None,
             names=["chr", "start_locus", "end_locus", "intensity"],
         )
-        .astype({"chr": "category"})
+        .astype({"chr": "category", 'start_locus': np.uint64, 'end_locus': np.uint64})
         .dropna()
     )
 

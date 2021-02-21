@@ -227,7 +227,6 @@ if __name__ == "__main__":
     newatac = pd.DataFrame(
         np.full(len(newint), np.nan), index=newint, columns=["intensity"]
     )
-   25         A backend to use, by default ``None`` (use the default backend.)                                  ??      6
     for int_ in newint:
         overlapping = beds[1].data.index.overlaps(int_)
         # what if len(overlapping) == 0?

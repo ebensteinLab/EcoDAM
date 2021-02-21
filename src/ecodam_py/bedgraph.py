@@ -1,3 +1,5 @@
+"""This module provides the basic building blocks for working with BedGraphs"""
+
 import pathlib
 from collections import namedtuple
 import multiprocessing
@@ -140,15 +142,14 @@ class BedGraphAccessor:
         (pd.DataFrame, pd.DataFrame)
             Only the overlapping areas from the self and other DFs
         """
-        equalized_this, equalized_other = equalize_loci(
-            self._obj.copy(), other.copy()
-        )
+        equalized_this, equalized_other = equalize_loci(self._obj.copy(), other.copy())
         unified = equalized_this.at_1bp * equalized_other.at_1bp
         means = (
             pd.DataFrame({"group": equalized_other.groups, "unified": unified})
             .groupby("group")
             .mean()
         )
+        means = means.drop(index=-1, errors="ignore")
         assert len(means) == len(equalized_other.even)
         means = means.query("unified > @overlap_pct")
         other_result = equalized_other.even.loc[means.index, :]
@@ -157,6 +158,7 @@ class BedGraphAccessor:
             .groupby("group")
             .mean()
         )
+        means = means.drop(index=-1, errors="ignore")
         assert len(means) == len(equalized_this.even)
         means = means.query("unified > @overlap_pct")
         self_result = equalized_this.even.loc[means.index, :]
@@ -233,7 +235,7 @@ def pad_with_zeros(nfr: pd.DataFrame, chrom: pd.DataFrame):
     return nfr, chrom
 
 
-@numba.njit(cache=True, parallel=True)
+@numba.njit("Tuple((u1[:], i8[:]))(u8[:], u8[:], i8[:])", cache=True, parallel=False)
 def intervals_to_1bp_mask(
     start: np.ndarray,
     end: np.ndarray,
@@ -244,7 +246,7 @@ def intervals_to_1bp_mask(
     """
     length = end[-1] - start[0]
     mask = np.zeros(length, dtype=np.uint8)
-    groups = np.zeros(length, dtype=np.uint64)
+    groups = np.full(length, -1, dtype=np.int64)
     end -= start[0]
     start -= start[0]
     one = np.uint8(1)
@@ -304,12 +306,12 @@ def equalize_loci(
     self_at_1bp, self_groups = intervals_to_1bp_mask(
         self_even.start_locus.to_numpy(),
         self_even.end_locus.to_numpy(),
-        self_even.index.to_numpy(),
+        self_even.index.to_numpy().astype(np.int64),
     )
     other_at_1bp, other_groups = intervals_to_1bp_mask(
         other_even.start_locus.to_numpy(),
         other_even.end_locus.to_numpy(),
-        other_even.index.to_numpy(),
+        other_even.index.to_numpy().astype(np.int64),
     )
     return Equalized(self_even, self_at_1bp, self_groups), Equalized(
         other_even, other_at_1bp, other_groups
@@ -465,7 +467,6 @@ class BedGraphFile:
         self.data["smoothed"] = np.convolve(
             self.data["intensity"], weights, mode="same"
         )
-
 
 
 if __name__ == "__main__":

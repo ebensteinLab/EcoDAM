@@ -4,7 +4,7 @@ from collections import namedtuple
 import pandas as pd
 
 from ecodam_py.bedgraph import BedGraphAccessor, equalize_loci
-from ecodam_py.eco_atac_normalization import get_index_values_for_nfr, normalize_with_site_density, serialize_bedgraph, prepare_site_density_for_norm
+from ecodam_py.eco_atac_normalization import normalize_with_site_density, serialize_bedgraph, prepare_site_density_for_norm
 
 
 EcoDamData = namedtuple("EcoDamData", ["chrom", "naked", "theo", "nfr"])
