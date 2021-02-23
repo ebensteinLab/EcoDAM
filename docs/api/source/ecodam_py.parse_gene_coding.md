@@ -1,1 +1,0 @@
-# ![mkapi](ecodam_py.parse_gene_coding|code|)

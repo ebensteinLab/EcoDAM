@@ -9,6 +9,7 @@ nav:
         - BedGraphAccessor: BedGraphAccessor.md
     - API: mkapi/api/src/ecodam_py
     - Tools: tools.md
+    - Notebooks: notebooks.md
     - About: about.md
 
 plugins:
