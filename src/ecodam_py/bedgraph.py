@@ -1,5 +1,6 @@
 """This module provides the basic building blocks for working with BedGraphs"""
 
+import warnings
 import pathlib
 from collections import namedtuple
 import multiprocessing
@@ -15,8 +16,10 @@ import numba
 @pd.api.extensions.register_dataframe_accessor("bg")
 class BedGraphAccessor:
     """
-    Introduces a ".bg" accessor to DataFrame which provides unique capabilities
-    for the DF, like new methods and properties.
+    Introduces a `.bg` accessor to DataFrame which provides unique capabilities
+    for the DF, including new methods and properties.
+
+    To use them, simply import this class to your current scope.
     """
 
     def __init__(self, pandas_obj):
@@ -25,7 +28,7 @@ class BedGraphAccessor:
 
     @staticmethod
     def _validate(obj):
-        """verify there is a column latitude and a column longitude"""
+        """verify there is an intensity and a 'chr' column"""
         if "intensity" not in obj.columns or "chr" not in obj.columns:
             raise AttributeError("Must have all needed columns")
         if not isinstance(obj.index, pd.IntervalIndex):
@@ -34,13 +37,20 @@ class BedGraphAccessor:
         else:
             assert obj.index.name == "locus"
 
-    @property
-    def center(self):
-        left = self._obj.index.left
-        right = self._obj.index.right
-        return (right - left) / 2
+    def index_to_columns(self) -> pd.DataFrame:
+        """Encodes the loci information in two columns of the DF.
 
-    def index_to_columns(self):
+        This method takes a DF that has its locus information encoded in its
+        index, possibly as a result of calling
+        [columns_to_index](ecodam_py.bedgraph.BedGraphAccessor.columns_to_index)
+        on it, and changes it so that its index becomes a standard RangeIndex
+        and the loci infomration is kept in two `np.int64` columns,
+        'start_locus' and 'end_locus'.
+
+        Returns
+        -------
+        A modified DF with two new columns for the locus info
+        """
         if "start_locus" in self._obj.columns and "end_locus" in self._obj.columns:
             return self._obj
         obj = self._obj.copy()
@@ -49,7 +59,19 @@ class BedGraphAccessor:
         obj = obj.reset_index().drop("locus", axis=1)
         return obj
 
-    def columns_to_index(self):
+    def columns_to_index(self) -> pd.DataFrame:
+        """Encodes the loci information in the index of the DF.
+
+        This method takes a DF that has its locus information as columns, i.e.
+        'start_locus' and 'end_locus', and moves these columns to a new
+        pd.IntervalIndex instead.
+
+        Returns
+        -------
+        pd.DataFrame
+            A new DF with an IntervalIndex instead of the 'start_locus' and
+            'end_locus' columns
+        """
         if self._obj.index.name == "locus":
             return self._obj
         obj = self._obj.copy()
@@ -62,7 +84,21 @@ class BedGraphAccessor:
         obj = obj.set_index("locus").drop(["start_locus", "end_locus"], axis=1)
         return obj
 
-    def add_chr(self, chr_: str = "chr15"):
+    def add_chr(self, chr_: str = "chr15") -> pd.DataFrame:
+        """Adds a 'chr' column to a copied DF.
+
+        Useful in certain internal situations mostly.
+
+        Parameters
+        ----------
+        chr : str, optional
+            The chromosome name to add
+
+        Returns
+        -------
+        pd.DataFrame
+            A new DF with the new column
+        """
         obj = self._obj.copy()
         if "chr" in obj.columns:
             obj = obj.astype({"chr": "category"})
@@ -72,7 +108,18 @@ class BedGraphAccessor:
         return obj
 
     def serialize(self, fname: pathlib.Path, mode: str = "w"):
-        """Writes the BedGraph to disk"""
+        """Writes the BedGraph to disk.
+
+        This method first normalizes the BedGraph and then writes it
+        to disk with the given write mode.
+
+        Parameters
+        ----------
+        fname : pathlib.Path
+            Filename to write to
+        mode : str
+            File writing mode (similar to the built-in open()). By default 'w'
+        """
         self.index_to_columns().reindex(
             ["chr", "start_locus", "end_locus", "intensity"], axis=1
         ).to_csv(fname, sep="\t", header=None, index=False, mode=mode)
@@ -332,6 +379,10 @@ class BedGraphFile:
         header : bool, optional
             Whether the file contains a header or not
         """
+        warnings.warn(
+            "This class is deprecated and will be removed in a future version. Please use the BedGraphAccessor class.",
+            DeprecationWarning,
+        )
         self.file = file
         if header:
             self.data = pd.read_csv(file, sep="\t")

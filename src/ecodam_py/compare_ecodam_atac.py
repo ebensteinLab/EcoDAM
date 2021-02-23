@@ -1,6 +1,7 @@
 import pathlib
 import copy
 from typing import Tuple, List
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -60,6 +61,7 @@ def put_on_even_grounds(beds: List[BedGraphFile]) -> List[BedGraphFile]:
 
 
 def convert_to_intervalindex(beds: List[BedGraphFile]) -> List[BedGraphFile]:
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     for bed in beds:
         left = bed.data.loc[:, "start_locus"].copy()
         right = bed.data.loc[:, "end_locus"].copy()
@@ -71,12 +73,14 @@ def convert_to_intervalindex(beds: List[BedGraphFile]) -> List[BedGraphFile]:
 
 
 def generate_intervals_1kb(data) -> pd.IntervalIndex:
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     first, last = data.index[0], data.index[-1]
     idx = pd.interval_range(first.left, last.right, freq=1000, closed="left")
     return idx
 
 
 def equalize_distribs(eco, naked, atac):
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     eco = normalize_df_between_01(eco)
     naked = normalize_df_between_01(naked)
     max_ = atac.intensity.max()
@@ -87,12 +91,14 @@ def equalize_distribs(eco, naked, atac):
 
 
 def normalize_df_between_01(data):
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     data.loc[:, "intensity"] -= data.loc[:, "intensity"].min()
     data.loc[:, "intensity"] /= data.loc[:, "intensity"].max()
     return data
 
 
 def match_histograms(eco: pd.DataFrame, atac: pd.DataFrame):
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     atac_matched = skimage.exposure.match_histograms(
         atac.intensity.to_numpy(), eco.intensity.to_numpy()
     )
@@ -119,6 +125,7 @@ def find_closest_diff(eco, atac, thresh=0.5):
 
 
 def write_intindex_to_disk(data: pd.DataFrame, fname: pathlib.Path, chr_: str = 'chr15'):
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     start = data.index.left.copy()
     end = data.index.right.copy()
     data.loc[:, "start"] = start
@@ -168,6 +175,7 @@ def normalize_eco_with_naked(eco, naked):
 
 
 def preprocess_bedgraph(paths: List[pathlib.Path]) -> List[BedGraphFile]:
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     res = []
     for path in paths:
         bed = BedGraphFile(path, header=False)
@@ -177,6 +185,7 @@ def preprocess_bedgraph(paths: List[pathlib.Path]) -> List[BedGraphFile]:
 
 
 def normalize_naked_with_theo(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.DataFrame:
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     no_sites = theo.intensity == 0
     zero_distrib = naked.loc[no_sites]
     zero_distrib.hist()
@@ -188,6 +197,7 @@ def normalize_naked_with_theo(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.Dat
 
 
 def preprocess_theo(fname: pathlib.Path, chr_: str = 'chr15'):
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     bed = BedGraphFile(fname, header=False)
     bed.data = bed.data.query('chr == @chr_')
     bed.data = bed.data.sort_values('start_locus')
@@ -196,6 +206,7 @@ def preprocess_theo(fname: pathlib.Path, chr_: str = 'chr15'):
 
 
 def reindex_theo_data(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.DataFrame:
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     new_theo = pd.DataFrame({'chr': 'chr15', 'intensity': np.zeros(len(naked), dtype=np.float64)})
     for idx in range(len(new_theo)):
         new_theo.iloc[idx, -1] = theo.loc[naked.index[idx].left:naked.index[idx].right].intensity.mean()

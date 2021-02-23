@@ -111,6 +111,7 @@ def generate_intervals_1kb(data: pd.DataFrame) -> pd.IntervalIndex:
     pd.IntervalIndex
         Evenly spaced IntervalIndex at 1000 bp.
     """
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     first, last = data.index[0], data.index[-1]
     idx = pd.interval_range(first.left, last.right, freq=1000, closed="left")
     return idx
@@ -122,6 +123,7 @@ def equalize_distribs(dfs: List[pd.DataFrame], atac: pd.DataFrame):
     This normalization step helps us compare datasets that are displayed with
     the same values.
     """
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     dfs = [normalize_df_between_01(df) for df in dfs]
     max_ = atac.intensity.max()
     min_ = atac.intensity.min()
@@ -131,6 +133,7 @@ def equalize_distribs(dfs: List[pd.DataFrame], atac: pd.DataFrame):
 
 
 def normalize_df_between_01(data):
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     data.loc[:, "intensity"] -= data.loc[:, "intensity"].min()
     data.loc[:, "intensity"] /= data.loc[:, "intensity"].max()
     return data
@@ -138,6 +141,7 @@ def normalize_df_between_01(data):
 
 def match_histograms(eco: pd.DataFrame, atac: pd.DataFrame):
     """Wrapper for the match_histograms scikit-image function"""
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     atac_matched = skimage.exposure.match_histograms(
         atac.intensity.to_numpy(), eco.intensity.to_numpy()
     )
@@ -146,6 +150,7 @@ def match_histograms(eco: pd.DataFrame, atac: pd.DataFrame):
 
 def plot_bg(eco, naked, atac):
     """Plots a BedGraphFile's DF"""
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     fig, ax = plt.subplots()
     ax.plot(eco.index.mid, eco.iloc[:, 0], label="EcoDAM", alpha=0.25)
     ax.plot(naked.index.mid, naked.iloc[:, 0], label="Naked", alpha=0.25)
@@ -203,6 +208,7 @@ def write_intindex_to_disk(
     chr_ : str
         Chromosome
     """
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     data = data.copy()
     start = data.index.left
     end = data.index.right
@@ -348,6 +354,7 @@ def preprocess_bedgraph(paths: List[pathlib.Path]) -> List[BedGraphFile]:
     -------
     List[BedGraphFile]
     """
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     res = []
     for path in paths:
         bed = BedGraphFile(path, header=False)
@@ -367,6 +374,7 @@ def subtract_background_with_theo(
     so we can safely discard them after using them to calculate the
     noise levels.
     """
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     zero_distrib = data.loc[no_sites]
     baseline_intensity = zero_distrib.mean()
     data = data.dropna().clip(lower=baseline_intensity) - baseline_intensity
@@ -481,6 +489,7 @@ def show_ridge_plot(df: pd.DataFrame, name="naked") -> sns.FacetGrid:
 
 
 def preprocess_theo(fname: pathlib.Path):
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     bed = BedGraphFile(fname, header=False)
     bed.data = bed.data.query('chr == "chr15"')
     bed.data = bed.data.sort_values("start_locus")
@@ -489,6 +498,7 @@ def preprocess_theo(fname: pathlib.Path):
 
 
 def reindex_theo_data(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.DataFrame:
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     new_theo = pd.DataFrame(
         {"chr": "chr15", "intensity": np.zeros(len(naked), dtype=np.float64)}
     )
@@ -507,6 +517,7 @@ def reindex_theo_data(naked: pd.DataFrame, theo: pd.DataFrame) -> pd.DataFrame:
 def serialize_bedgraph(
     bed: BedGraphFile, path: pathlib.Path, chr_: str = "chr15", mode: str = "w"
 ):
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     data = bed.data
     data.loc[:, "left"] = data.index.left
     data.loc[:, "right"] = data.index.right
@@ -641,6 +652,7 @@ def normalize_group_peaks_single_factor(
 
 
 def normalize_with_theo(data: pd.Series, theo: pd.DataFrame) -> pd.DataFrame:
+    warnings.warn('Deprecated. Please use the BedGraphAccessor-provided methods.', DeprecationWarning)
     norm_by = theo.intensity.dropna()
     norm_by = 1 / norm_by.loc[norm_by != 0]
     return data * norm_by
