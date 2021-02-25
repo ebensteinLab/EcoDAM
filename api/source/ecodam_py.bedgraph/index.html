@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../../img/favicon.ico">
+  <title>ecodam_py.bedgraph - EcoDAM</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../../css/theme.css" />
+  <link rel="stylesheet" href="../../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css" rel="stylesheet" />
+  <link href="../../../css/mkapi-common.css" rel="stylesheet" />
+  <link href="../../../css/mkapi-readthedocs.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "ecodam_py.bedgraph";
+    var mkdocs_page_input_path = "api/source/ecodam_py.bedgraph.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../../.." class="icon icon-home"> EcoDAM</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">User Guide</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../BedGraphAccessor/">BedGraphAccessor</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">API</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ecodam_py</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py/">ecodam_py</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.bedgraph/">ecodam_py.bedgraph</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.parse_gene_coding/">ecodam_py.parse_gene_coding</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.compare_ecodam_atac/">ecodam_py.compare_ecodam_atac</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.peak_calling/">ecodam_py.peak_calling</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.eco_atac_normalization/">ecodam_py.eco_atac_normalization</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.pybam/">ecodam_py.pybam</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.ml_pipeline/">ecodam_py.ml_pipeline</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../tools/">Tools</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../notebooks/">Notebooks</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../about/">About</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../..">EcoDAM</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>ecodam_py.bedgraph</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/ebensteinLab/EcoDAM/edit/master/docs/api/source/ecodam_py.bedgraph.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <div class="mkapi-node">
+<h1 id="" class="mkapi-object mkapi-object-code plain">
+<span class="mkapi-object-kind mkapi-object-kind-code">SOURCE CODE</span>
+<span class="mkapi-object-prefix">ecodam_py.</span><span class="mkapi-object-name">bedgraph</span>
+<span id="ecodam_py.bedgraph"></span><a class="mkapi-docs-link" href="../../ecodam_py.bedgraph">DOCS</a>
+</h1>
+
+<div class="mkapi-code">
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;This module provides the basic building blocks for working with BedGraphs&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterable</span>
+
+<span class="kn">import</span> <span class="nn">pybedtools</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+
+<span class="nd">@pd</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">extensions</span><span class="o">.</span><span class="n">register_dataframe_accessor</span><span class="p">(</span><span class="s2">&quot;bg&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">BedGraphAccessor</span><span class="p">:</span><span id="ecodam_py.bedgraph.BedGraphAccessor"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.BedGraphAccessor" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphAccessor">DOCS</a>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Introduces a `.bg` accessor to DataFrame which provides unique capabilities</span>
+<span class="sd">    for the DF, including new methods and properties.</span>
+
+<span class="sd">    To use them, simply import this class to your current scope.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pandas_obj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">pandas_obj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">pandas_obj</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;verify there is an intensity and a &#39;chr&#39; column&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;intensity&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">columns</span> <span class="ow">or</span> <span class="s2">&quot;chr&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Must have all needed columns&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">IntervalIndex</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;start_locus&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s2">&quot;end_locus&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Index and columns not in BedGraph format&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">obj</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;locus&quot;</span>
+
+    <span class="k">def</span> <span class="nf">index_to_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span><span id="ecodam_py.bedgraph.BedGraphAccessor.index_to_columns"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.BedGraphAccessor.index_to_columns" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphAccessor.index_to_columns">DOCS</a>
+        <span class="sd">&quot;&quot;&quot;Encodes the loci information in two columns of the DF.</span>
+
+<span class="sd">        This method takes a DF that has its locus information encoded in its</span>
+<span class="sd">        index, possibly as a result of calling</span>
+<span class="sd">        [columns_to_index](ecodam_py.bedgraph.BedGraphAccessor.columns_to_index)</span>
+<span class="sd">        on it, and changes it so that its index becomes a standard RangeIndex</span>
+<span class="sd">        and the loci infomration is kept in two `np.int64` columns,</span>
+<span class="sd">        &#39;start_locus&#39; and &#39;end_locus&#39;.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A modified DF with two new columns for the locus info</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;start_locus&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s2">&quot;end_locus&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;start_locus&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">left</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">right</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;locus&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[[</span><span class="s2">&quot;chr&quot;</span><span class="p">,</span> <span class="s2">&quot;start_locus&quot;</span><span class="p">,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">,</span> <span class="s2">&quot;intensity&quot;</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="nf">columns_to_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span><span id="ecodam_py.bedgraph.BedGraphAccessor.columns_to_index"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.BedGraphAccessor.columns_to_index" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphAccessor.columns_to_index">DOCS</a>
+        <span class="sd">&quot;&quot;&quot;Encodes the loci information in the index of the DF.</span>
+
+<span class="sd">        This method takes a DF that has its locus information as columns, i.e.</span>
+<span class="sd">        &#39;start_locus&#39; and &#39;end_locus&#39;, and moves these columns to a new</span>
+<span class="sd">        pd.IntervalIndex instead.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            A new DF with an IntervalIndex instead of the &#39;start_locus&#39; and</span>
+<span class="sd">            &#39;end_locus&#39; columns</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;locus&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;locus&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">IntervalIndex</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;start_locus&quot;</span><span class="p">],</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">],</span>
+            <span class="n">closed</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;locus&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;locus&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;start_locus&quot;</span><span class="p">,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="nf">add_chr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chr_</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;chr15&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span><span id="ecodam_py.bedgraph.BedGraphAccessor.add_chr"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.BedGraphAccessor.add_chr" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphAccessor.add_chr">DOCS</a>
+        <span class="sd">&quot;&quot;&quot;Adds a &#39;chr&#39; column to a copied DF.</span>
+
+<span class="sd">        Useful in certain internal situations mostly.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        chr : str, optional</span>
+<span class="sd">            The chromosome name to add</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            A new DF with the new column</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;chr&quot;</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s2">&quot;chr&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">})</span>
+            <span class="k">return</span> <span class="n">obj</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;chr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chr_</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s2">&quot;chr&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">):</span><span id="ecodam_py.bedgraph.BedGraphAccessor.serialize"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.BedGraphAccessor.serialize" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphAccessor.serialize">DOCS</a>
+        <span class="sd">&quot;&quot;&quot;Writes the BedGraph to disk.</span>
+
+<span class="sd">        This method first normalizes the BedGraph and then writes it</span>
+<span class="sd">        to disk with the given write mode.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fname : pathlib.Path</span>
+<span class="sd">            Filename to write to</span>
+<span class="sd">        mode : str</span>
+<span class="sd">            File writing mode (similar to the built-in open()). By default &#39;w&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index_to_columns</span><span class="p">()</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;chr&quot;</span><span class="p">,</span> <span class="s2">&quot;start_locus&quot;</span><span class="p">,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">,</span> <span class="s2">&quot;intensity&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">unweighted_overlap</span><span class="p">(</span><span id="ecodam_py.bedgraph.BedGraphAccessor.unweighted_overlap"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.BedGraphAccessor.unweighted_overlap" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphAccessor.unweighted_overlap">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Find the overlapping parts of self and other and return these areas.</span>
+
+<span class="sd">        This method looks for overlapping parts of the two BedGraph DFs and</span>
+<span class="sd">        returns only the relevant slices of these two objects. The overlap is</span>
+<span class="sd">        called &#39;unweighted&#39; because it considers an area to be overlapping even</span>
+<span class="sd">        if a single BP overlaps between the two loci. This might seem odd, but</span>
+<span class="sd">        it&#39;s helpful since we usually work with BedGraph files that have the</span>
+<span class="sd">        same coordinates, so this method is good enough. Use the (slower)</span>
+<span class="sd">        &#39;weighted_overlap&#39; method if you need to assert that the overlap is</span>
+<span class="sd">        signifanct in terms of BP counts.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : pd.DataFrame</span>
+<span class="sd">            A BedGraph DF</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        (pd.DataFrame, pd.DataFrame)</span>
+<span class="sd">            The &#39;self&#39; and &#39;other&#39; DFs only at the rows that overlap</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns_to_index</span><span class="p">()</span>
+        <span class="n">other</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">bg</span><span class="o">.</span><span class="n">columns_to_index</span><span class="p">()</span>
+        <span class="n">selfidx</span><span class="p">,</span> <span class="n">otheridx</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">interval</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
+            <span class="n">overlapping_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">overlaps</span><span class="p">(</span><span class="n">interval</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">overlapping_idx</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">otheridx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">overlapping_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">selfidx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">selfidx</span><span class="p">],</span> <span class="n">other</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">otheridx</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">weighted_overlap</span><span class="p">(</span><span id="ecodam_py.bedgraph.BedGraphAccessor.weighted_overlap"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.BedGraphAccessor.weighted_overlap" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphAccessor.weighted_overlap">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">overlap_pct</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.75</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Find the overlapping parts of the two DFs with at least &#39;overlap_pct&#39;</span>
+<span class="sd">        amount of overlap.</span>
+
+<span class="sd">        In the first phase of this method, the two DFs are put on the same</span>
+<span class="sd">        coordinates so that they could be compared in a viable manner.</span>
+<span class="sd">        Currently the way its done is to move them to 1bp resolution which</span>
+<span class="sd">        automatically assists in these types of calculations. The 1bp</span>
+<span class="sd">        resolution data is masked data, i.e. the &#39;intensity&#39; values can only be</span>
+<span class="sd">        0 or 1.</span>
+
+<span class="sd">        Then the DFs are multiplied and grouped by their previous starts and</span>
+<span class="sd">        ends, i.e. each group is now a specified loci in the original data.</span>
+<span class="sd">        Using a groupby operation and a mean calculation we see which group&#39;s</span>
+<span class="sd">        average is higher than the given &#39;overlap_pct&#39; value, and if it is we</span>
+<span class="sd">        mark that group as overlapping.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : pd.DataFrame</span>
+<span class="sd">            A DF with the relevant data</span>
+<span class="sd">        overlap_pct : float, optional</span>
+<span class="sd">            The percentage of loci that should overlap between the two datasets</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        (pd.DataFrame, pd.DataFrame)</span>
+<span class="sd">            Only the overlapping areas from the self and other DFs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">equalized_this</span><span class="p">,</span> <span class="n">equalized_other</span> <span class="o">=</span> <span class="n">equalize_loci</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">other</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="n">unified</span> <span class="o">=</span> <span class="n">equalized_this</span><span class="o">.</span><span class="n">at_1bp</span> <span class="o">*</span> <span class="n">equalized_other</span><span class="o">.</span><span class="n">at_1bp</span>
+        <span class="n">means</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="n">equalized_other</span><span class="o">.</span><span class="n">groups</span><span class="p">,</span> <span class="s2">&quot;unified&quot;</span><span class="p">:</span> <span class="n">unified</span><span class="p">})</span>
+            <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">means</span> <span class="o">=</span> <span class="n">means</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">means</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">equalized_other</span><span class="o">.</span><span class="n">even</span><span class="p">)</span>
+        <span class="n">means</span> <span class="o">=</span> <span class="n">means</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;unified &gt; @overlap_pct&quot;</span><span class="p">)</span>
+        <span class="n">other_result</span> <span class="o">=</span> <span class="n">equalized_other</span><span class="o">.</span><span class="n">even</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">means</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">means</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="n">equalized_this</span><span class="o">.</span><span class="n">groups</span><span class="p">,</span> <span class="s2">&quot;unified&quot;</span><span class="p">:</span> <span class="n">unified</span><span class="p">})</span>
+            <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">means</span> <span class="o">=</span> <span class="n">means</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">means</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">equalized_this</span><span class="o">.</span><span class="n">even</span><span class="p">)</span>
+        <span class="n">means</span> <span class="o">=</span> <span class="n">means</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;unified &gt; @overlap_pct&quot;</span><span class="p">)</span>
+        <span class="n">self_result</span> <span class="o">=</span> <span class="n">equalized_this</span><span class="o">.</span><span class="n">even</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">means</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">return</span> <span class="n">self_result</span><span class="p">,</span> <span class="n">other_result</span>
+
+    <span class="k">def</span> <span class="nf">to_1bp_resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">multi_chrom</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span><span id="ecodam_py.bedgraph.BedGraphAccessor.to_1bp_resolution"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.BedGraphAccessor.to_1bp_resolution" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphAccessor.to_1bp_resolution">DOCS</a>
+        <span class="sd">&quot;&quot;&quot;Changes the coordinates of the given DF to have 1bp resolution.&quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_to_columns</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">multi_chrom</span><span class="p">:</span>
+            <span class="n">grouped</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;chr&quot;</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">()</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_single_chr_to_1bp</span><span class="p">,</span> <span class="n">grouped</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_chr_to_1bp</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_single_chr_to_1bp</span><span class="p">(</span><span class="n">chr_group</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">groups</span> <span class="o">=</span> <span class="n">intervals_to_1bp_mask</span><span class="p">(</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">start_locus</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">obj</span><span class="o">.</span><span class="n">end_locus</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">starts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;start_locus&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">obj</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">ends</span> <span class="o">=</span> <span class="n">starts</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">chr_</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;chr&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">intensity</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;intensity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;chr&quot;</span><span class="p">:</span> <span class="n">chr_</span><span class="p">,</span>
+                <span class="s2">&quot;start_locus&quot;</span><span class="p">:</span> <span class="n">starts</span><span class="p">,</span>
+                <span class="s2">&quot;end_locus&quot;</span><span class="p">:</span> <span class="n">ends</span><span class="p">,</span>
+                <span class="s2">&quot;intensity&quot;</span><span class="p">:</span> <span class="n">intensity</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s2">&quot;chr&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">})</span>
+
+
+<span class="k">def</span> <span class="nf">pad_with_zeros</span><span class="p">(</span><span class="n">nfr</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">chrom</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span><span id="ecodam_py.bedgraph.pad_with_zeros"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.pad_with_zeros" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.pad_with_zeros">DOCS</a>
+    <span class="sd">&quot;&quot;&quot;Adds zero entries for loci which are not included in one of the given</span>
+<span class="sd">    DFs&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">nfr</span><span class="o">.</span><span class="n">start_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">chrom</span><span class="o">.</span><span class="n">start_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">dup</span> <span class="o">=</span> <span class="n">chrom</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">dup</span><span class="o">.</span><span class="n">start_locus</span> <span class="o">=</span> <span class="n">nfr</span><span class="o">.</span><span class="n">start_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dup</span><span class="o">.</span><span class="n">end_locus</span> <span class="o">=</span> <span class="n">chrom</span><span class="o">.</span><span class="n">start_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dup</span><span class="o">.</span><span class="n">intensity</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">chrom</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dup</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">chrom</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;start_locus&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">nfr</span><span class="o">.</span><span class="n">start_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">chrom</span><span class="o">.</span><span class="n">start_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">dup</span> <span class="o">=</span> <span class="n">nfr</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">dup</span><span class="o">.</span><span class="n">start_locus</span> <span class="o">=</span> <span class="n">chrom</span><span class="o">.</span><span class="n">start_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dup</span><span class="o">.</span><span class="n">end_locus</span> <span class="o">=</span> <span class="n">nfr</span><span class="o">.</span><span class="n">start_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dup</span><span class="o">.</span><span class="n">intensity</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">nfr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dup</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">nfr</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;start_locus&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">nfr</span><span class="o">.</span><span class="n">end_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">chrom</span><span class="o">.</span><span class="n">end_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">dup</span> <span class="o">=</span> <span class="n">nfr</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">dup</span><span class="o">.</span><span class="n">start_locus</span> <span class="o">=</span> <span class="n">nfr</span><span class="o">.</span><span class="n">end_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dup</span><span class="o">.</span><span class="n">end_locus</span> <span class="o">=</span> <span class="n">chrom</span><span class="o">.</span><span class="n">end_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dup</span><span class="o">.</span><span class="n">intensity</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">nfr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">nfr</span><span class="p">,</span> <span class="n">dup</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;start_locus&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">nfr</span><span class="o">.</span><span class="n">end_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">chrom</span><span class="o">.</span><span class="n">end_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">dup</span> <span class="o">=</span> <span class="n">chrom</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">dup</span><span class="o">.</span><span class="n">start_locus</span> <span class="o">=</span> <span class="n">chrom</span><span class="o">.</span><span class="n">end_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dup</span><span class="o">.</span><span class="n">end_locus</span> <span class="o">=</span> <span class="n">nfr</span><span class="o">.</span><span class="n">end_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dup</span><span class="o">.</span><span class="n">intensity</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">chrom</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">chrom</span><span class="p">,</span> <span class="n">dup</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;start_locus&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">nfr</span><span class="p">,</span> <span class="n">chrom</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">njit</span><span class="p">(</span><span class="s2">&quot;Tuple((u1[:], i8[:]))(u8[:], u8[:], i8[:])&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span id="ecodam_py.bedgraph.intervals_to_1bp_mask"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.intervals_to_1bp_mask" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.intervals_to_1bp_mask">DOCS</a>
+<span class="k">def</span> <span class="nf">intervals_to_1bp_mask</span><span class="p">(</span>
+    <span class="n">start</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">end</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">orig_groups</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Generate a new 1bp BedGraph and keep information of the original</span>
+<span class="sd">    distribution and sources of data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">end</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">-=</span> <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">start</span> <span class="o">-=</span> <span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">one</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">numba</span><span class="o">.</span><span class="n">prange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">start</span><span class="p">)):</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">start</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">en</span> <span class="o">=</span> <span class="n">end</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">st</span><span class="p">:</span><span class="n">en</span><span class="p">]</span> <span class="o">=</span> <span class="n">one</span>
+        <span class="n">groups</span><span class="p">[</span><span class="n">st</span><span class="p">:</span><span class="n">en</span><span class="p">]</span> <span class="o">=</span> <span class="n">orig_groups</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">mask</span><span class="p">,</span> <span class="n">groups</span>
+
+
+<span class="k">def</span> <span class="nf">_trim_start_end</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Cuts the data so that it starts at start and ends at end.</span>
+
+<span class="sd">    The values refer to the &#39;start_locus&#39; column of the data DataFrame.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : pd.DataFrame</span>
+<span class="sd">        Data before trimming</span>
+<span class="sd">    start, end : int</span>
+<span class="sd">        Values from &#39;start_locus&#39; to cut by</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        Trimmed data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">start_idx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;start_locus&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">end_idx</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;start_locus&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">,</span> <span class="p">:]</span>
+
+
+<span class="k">def</span> <span class="nf">put_dfs_on_even_grounds</span><span class="p">(</span><span class="n">dfs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span><span id="ecodam_py.bedgraph.put_dfs_on_even_grounds"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.put_dfs_on_even_grounds" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.put_dfs_on_even_grounds">DOCS</a>
+    <span class="sd">&quot;&quot;&quot;Asserts overlap of all given DataFrames.</span>
+
+<span class="sd">    An accompanying function to &#39;put_on_even_grounds&#39; that does the heavy</span>
+<span class="sd">    lifting.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dfs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span>
+    <span class="n">starts</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">start_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dfs</span><span class="p">)</span>
+    <span class="n">unified_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">starts</span><span class="p">)</span>
+    <span class="n">ends</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">end_locus</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dfs</span><span class="p">)</span>
+    <span class="n">unified_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ends</span><span class="p">)</span>
+    <span class="n">new_dfs</span> <span class="o">=</span> <span class="p">(</span><span class="n">_trim_start_end</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">unified_start</span><span class="p">,</span> <span class="n">unified_end</span><span class="p">)</span> <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dfs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_dfs</span>
+
+
+<span class="c1">#: A unique return type for equalize_loci</span>
+<span class="n">Equalized</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Equalized&quot;</span><span class="p">,</span> <span class="s2">&quot;even at_1bp groups&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">equalize_loci</span><span class="p">(</span><span id="ecodam_py.bedgraph.equalize_loci"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.equalize_loci" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.equalize_loci">DOCS</a>
+    <span class="n">first</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">second</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Equalized</span><span class="p">,</span> <span class="n">Equalized</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate an approximately-equal loci DFs from the two given ones.</span>
+
+<span class="sd">    This function is a mini-pipeline designed to bring two DFs to have the same</span>
+<span class="sd">    loci. It works great with a small caveat - the returned &#39;even&#39; DFs might</span>
+<span class="sd">    have &#39;holes&#39; that aren&#39;t covered by any loci. In other words, the loci of</span>
+<span class="sd">    the DFs don&#39;t necessarily populate all of the loci from the starting point</span>
+<span class="sd">    to the ending one. Again, this is only relevant to the &#39;even&#39; entry, the</span>
+<span class="sd">    1bp resolution copy obviously does cover all BP.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    first, second : pd.DataFrame</span>
+<span class="sd">        Two DFs that have to be equalized</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (Equalized, Equalized)</span>
+<span class="sd">        An even variant (same as the original but only with relevant loci)</span>
+<span class="sd">        and 1 bp resolution version with the groups (original loci) marked</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If the DFs cannot be coerced to have the same loci</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;start_locus&#39;</span><span class="p">)</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">([</span><span class="s1">&#39;start_locus&#39;</span><span class="p">,</span> <span class="s1">&#39;end_locus&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s1">&#39;start_locus&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="s1">&#39;end_locus&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">})</span>
+    <span class="n">second</span> <span class="o">=</span> <span class="n">second</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;start_locus&#39;</span><span class="p">)</span>
+    <span class="n">second</span> <span class="o">=</span> <span class="n">second</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">([</span><span class="s1">&#39;start_locus&#39;</span><span class="p">,</span> <span class="s1">&#39;end_locus&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s1">&#39;start_locus&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="s1">&#39;end_locus&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">})</span>
+    <span class="n">self_even</span><span class="p">,</span> <span class="n">other_even</span> <span class="o">=</span> <span class="n">put_dfs_on_even_grounds</span><span class="p">([</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">self_even</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">other_even</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No intersection possible between the two DFs&quot;</span><span class="p">)</span>
+    <span class="n">self_even</span><span class="p">,</span> <span class="n">other_even</span> <span class="o">=</span> <span class="n">pad_with_zeros</span><span class="p">(</span><span class="n">self_even</span><span class="p">,</span> <span class="n">other_even</span><span class="p">)</span>
+    <span class="n">self_at_1bp</span><span class="p">,</span> <span class="n">self_groups</span> <span class="o">=</span> <span class="n">intervals_to_1bp_mask</span><span class="p">(</span>
+        <span class="n">self_even</span><span class="o">.</span><span class="n">start_locus</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+        <span class="n">self_even</span><span class="o">.</span><span class="n">end_locus</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+        <span class="n">self_even</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">other_at_1bp</span><span class="p">,</span> <span class="n">other_groups</span> <span class="o">=</span> <span class="n">intervals_to_1bp_mask</span><span class="p">(</span>
+        <span class="n">other_even</span><span class="o">.</span><span class="n">start_locus</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+        <span class="n">other_even</span><span class="o">.</span><span class="n">end_locus</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+        <span class="n">other_even</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">Equalized</span><span class="p">(</span><span class="n">self_even</span><span class="p">,</span> <span class="n">self_at_1bp</span><span class="p">,</span> <span class="n">self_groups</span><span class="p">),</span> <span class="n">Equalized</span><span class="p">(</span>
+        <span class="n">other_even</span><span class="p">,</span> <span class="n">other_at_1bp</span><span class="p">,</span> <span class="n">other_groups</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">BedGraphFile</span><span class="p">:</span><span id="ecodam_py.bedgraph.BedGraphFile"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.BedGraphFile" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphFile">DOCS</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A BedGraphFile file which can be manipulated an displayed.</span>
+
+<span class="sd">        The init function will also normalize column names for easier processing down</span>
+<span class="sd">        the pipeline.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        file : pathlib.Path</span>
+<span class="sd">            Data as BedGraph to read</span>
+<span class="sd">        header : bool, optional</span>
+<span class="sd">            Whether the file contains a header or not</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;This class is deprecated and will be removed in a future version. Please use the BedGraphAccessor class.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">file</span>
+        <span class="k">if</span> <span class="n">header</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sort_molecule_by_intensity</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s2">&quot;molid&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+                <span class="n">file</span><span class="p">,</span>
+                <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;chr&quot;</span><span class="p">,</span> <span class="s2">&quot;start_locus&quot;</span><span class="p">,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">,</span> <span class="s2">&quot;intensity&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s2">&quot;chr&quot;</span><span class="p">:</span> <span class="s2">&quot;category&quot;</span><span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">add_center_locus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span><span id="ecodam_py.bedgraph.BedGraphFile.add_center_locus"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.BedGraphFile.add_center_locus" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphFile.add_center_locus">DOCS</a>
+        <span class="sd">&quot;&quot;&quot;Adds a center point to each segment of a molecule.</span>
+
+<span class="sd">        This is done so that the intensity value can be assigned to a specific base</span>
+<span class="sd">        for easier processing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;center_locus&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;start_locus&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="k">def</span> <span class="nf">_sort_molecule_by_intensity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sorts the DF so that the first molecules are the dimmest, and the</span>
+<span class="sd">        last ones are the brightest&quot;&quot;&quot;</span>
+        <span class="n">sorted_molids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;molid&quot;</span><span class="p">)[</span><span class="s2">&quot;intensity&quot;</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">sorter</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">sorted_molids</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sorted_molids</span><span class="p">))))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;molid_rank&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;molid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">sorter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;molid_rank&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">convert_df_to_da</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span><span id="ecodam_py.bedgraph.BedGraphFile.convert_df_to_da"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.BedGraphFile.convert_df_to_da" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphFile.convert_df_to_da">DOCS</a>
+        <span class="sd">&quot;&quot;&quot;Create a more complex representation of the tracks as an</span>
+<span class="sd">        xr.DataArray.</span>
+
+<span class="sd">        The array is a two dimensional array with coordinates that denote the</span>
+<span class="sd">        molecule name and its brightness at any given locus.</span>
+
+<span class="sd">        The method creates a new self.dataarray attribute which contains this</span>
+<span class="sd">        DataArray.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mol_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;molid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;&lt;U8&quot;</span><span class="p">)</span>
+        <span class="n">molnum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mol_ids</span><span class="p">))</span>
+        <span class="n">loci</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;start_locus&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;end_locus&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">loci</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;locus&quot;</span><span class="p">:</span> <span class="n">loci</span><span class="p">,</span> <span class="s2">&quot;molnum&quot;</span><span class="p">:</span> <span class="n">molnum</span><span class="p">,</span> <span class="s2">&quot;molid&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;molnum&quot;</span><span class="p">,</span> <span class="n">mol_ids</span><span class="p">)}</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chr&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;chromosome&quot;</span><span class="p">]}</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;molnum&quot;</span><span class="p">,</span> <span class="s2">&quot;locus&quot;</span><span class="p">]</span>
+        <span class="n">da</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">mol_ids</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">loci</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
+            <span class="n">dims</span><span class="o">=</span><span class="n">dims</span><span class="p">,</span>
+            <span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">intensity</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataarray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populate_da_with_thresholded_intensity</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataarray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populate_da_with_intensity</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_populate_da_with_thresholded_intensity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">da</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate over the initial DA and populate an array with its</span>
+<span class="sd">        intensity values, assuming they&#39;re only 0 and 1.</span>
+
+<span class="sd">        The method also normalizes the intensity counts so that the recorded</span>
+<span class="sd">        value is the average of the new value and the previous one. There&#39;s a</span>
+<span class="sd">        slight issue with this normalization step since the data is zeroed</span>
+<span class="sd">        before any actual calculations are done. This means that if some part</span>
+<span class="sd">        of a molecule already had a non-NaN value, it&#39;s zeroed out. From my</span>
+<span class="sd">        current understanding the chances for this are zero, but perhaps I&#39;m</span>
+<span class="sd">        missing something.</span>
+
+<span class="sd">        The underlying DataFrame contains only 0&#39;s and 1&#39;s so we skip</span>
+<span class="sd">        the normalization step that occurs in the sister method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">sl</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">slice</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">molid_rank</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">molid_rank</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="nb">slice</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">start_locus</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">end_locus</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">da</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">intensity</span>
+        <span class="k">return</span> <span class="n">da</span>
+
+    <span class="k">def</span> <span class="nf">_populate_da_with_intensity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">da</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Iterate over the initial DA and populate an array with its</span>
+<span class="sd">        intensity values.</span>
+
+<span class="sd">        The method also normalizes the intensity counts so that the recorded</span>
+<span class="sd">        value is the average of the new value and the previous one. There&#39;s a</span>
+<span class="sd">        slight issue with this normalization step since the data is zeroed</span>
+<span class="sd">        before any actual calculations are done. This means that if some part</span>
+<span class="sd">        of a molecule already had a non-NaN value, it&#39;s zeroed out. From my</span>
+<span class="sd">        current understanding the chances for this are zero, but perhaps I&#39;m</span>
+<span class="sd">        missing something.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">da_norm_counts</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">da_norm_counts</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">sl</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">slice</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">molid_rank</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">molid_rank</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="nb">slice</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">start_locus</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">end_locus</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">current_data</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span>
+            <span class="n">current_nans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">current_data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">current_nans</span><span class="p">):</span>
+                <span class="n">current_data</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">da</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_data</span> <span class="o">+</span> <span class="n">row</span><span class="o">.</span><span class="n">intensity</span><span class="p">)</span> <span class="o">/</span> <span class="n">da_norm_counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span>
+            <span class="n">da_norm_counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">da</span>
+
+    <span class="k">def</span> <span class="nf">smooth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">):</span><span id="ecodam_py.bedgraph.BedGraphFile.smooth"></span><a class="mkapi-docs-link" title="ecodam_py.bedgraph.BedGraphFile.smooth" href="../../ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphFile.smooth">DOCS</a>
+        <span class="sd">&quot;&quot;&quot;Smooths out the data with the given-sized window.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        window : int</span>
+<span class="sd">            Smooth data by this window</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+        <span class="n">weights</span> <span class="o">/=</span> <span class="n">weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;smoothed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;intensity&quot;</span><span class="p">],</span> <span class="n">weights</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;same&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">nfr_all_chrom</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span>
+        <span class="s2">&quot;/mnt/saphyr/Saphyr_Data/DAM_DLE_VHL_DLE/Hagai/ENCFF240YRV.sorted.bedgraph&quot;</span>
+    <span class="p">)</span>
+</code></pre></div>
+</div>
+</div>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/ebensteinLab/EcoDAM/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+      
+    </span>
+</div>
+    <script>var base_url = '../../..';</script>
+    <script src="../../../js/theme.js" defer></script>
+      <script src="../../../js/mkapi.js" defer></script>
+      <script src="../../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

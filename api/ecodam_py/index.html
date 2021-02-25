@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>ecodam_py - EcoDAM</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css" rel="stylesheet" />
+  <link href="../../css/mkapi-common.css" rel="stylesheet" />
+  <link href="../../css/mkapi-readthedocs.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "ecodam_py";
+    var mkdocs_page_input_path = "api/ecodam_py.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> EcoDAM</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">User Guide</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../BedGraphAccessor/">BedGraphAccessor</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">API</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="#">ecodam_py</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">ecodam_py</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#ecodam_pybedgraph">bedgraph</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ecodam_pyparse_gene_coding">parse_gene_coding</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ecodam_pypeak_calling">peak_calling</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ecodam_pyeco_atac_normalization">eco_atac_normalization</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ecodam_pypybam">pybam</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ecodam_py.bedgraph/">ecodam_py.bedgraph</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ecodam_py.parse_gene_coding/">ecodam_py.parse_gene_coding</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ecodam_py.compare_ecodam_atac/">ecodam_py.compare_ecodam_atac</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ecodam_py.peak_calling/">ecodam_py.peak_calling</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ecodam_py.eco_atac_normalization/">ecodam_py.eco_atac_normalization</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ecodam_py.pybam/">ecodam_py.pybam</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../ecodam_py.ml_pipeline/">ecodam_py.ml_pipeline</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../tools/">Tools</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../notebooks/">Notebooks</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../about/">About</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">EcoDAM</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>ecodam_py &raquo;</li>
+        
+      
+        
+          <li>API &raquo;</li>
+        
+      
+    
+    <li>ecodam_py</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/ebensteinLab/EcoDAM/edit/master/docs/api/ecodam_py.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <div class="mkapi-node" id="ecodam_py">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object package plain top">
+    <div class="mkapi-object-kind package top">package</div>
+    <h1 id="ecodam_py" class="mkapi-object-body package top"><span class="mkapi-object-name">ecodam_py</span></h1>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/ecodam_py/#ecodam_py" title="Source for ecodam_py">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Compare and visualize EcoDAM performance <a href="https://github.com/ebensteinLab/EcoDAM/">https://github.com/ebensteinLab/EcoDAM/</a></p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="ecodam_py.bedgraph">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h2 id="ecodam_pybedgraph" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="#ecodam_py">ecodam_py</a>.</span><span class="mkapi-object-name"><a href="../ecodam_py.bedgraph/#ecodam_py.bedgraph">bedgraph</a></span></h2>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/ecodam_py.bedgraph/#ecodam_py.bedgraph" title="Source for ecodam_py.bedgraph">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>This module provides the basic building blocks for working with BedGraphs</p></div>
+    </div>
+  <div class="mkapi-section attributes">
+      <div class="mkapi-section-name attributes">
+          <span class="mkapi-section-name-body attributes">Attributes</span> 
+        </div>
+      <div class="mkapi-section-body attributes"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">Equalized</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A unique return type for equalize_loci</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="../ecodam_py.bedgraph#ecodam_py.bedgraph.Equalized">Equalized</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Equalized(even, at_1bp, groups)<a class="mkapi-src-link" href="../source/ecodam_py.bedgraph/#ecodam_py.bedgraph.Equalized" title="Source for ecodam_py.bedgraph.Equalized">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../ecodam_py.bedgraph#ecodam_py.bedgraph.BedGraphAccessor">BedGraphAccessor</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Introduces a <code>.bg</code> accessor to DataFrame which provides unique capabilities
+for the DF, including new methods and properties.<a class="mkapi-src-link" href="../source/ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphAccessor" title="Source for ecodam_py.bedgraph.BedGraphAccessor">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../ecodam_py.bedgraph#ecodam_py.bedgraph.BedGraphFile">BedGraphFile</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A BedGraphFile file which can be manipulated an displayed.<a class="mkapi-src-link" href="../source/ecodam_py.bedgraph/#ecodam_py.bedgraph.BedGraphFile" title="Source for ecodam_py.bedgraph.BedGraphFile">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section functions">
+      <div class="mkapi-section-name functions">
+          <span class="mkapi-section-name-body functions">Functions</span> 
+        </div>
+      <div class="mkapi-section-body functions"><ul class="mkapi-items">
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.bedgraph#ecodam_py.bedgraph.equalize_loci">equalize_loci</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">first</code>, <code class="mkapi-object-signature">second</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(Equalized, Equalized)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Generate an approximately-equal loci DFs from the two given ones.<a class="mkapi-src-link" href="../source/ecodam_py.bedgraph/#ecodam_py.bedgraph.equalize_loci" title="Source for ecodam_py.bedgraph.equalize_loci">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.bedgraph#ecodam_py.bedgraph.intervals_to_1bp_mask">intervals_to_1bp_mask</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">start</code>, <code class="mkapi-object-signature">end</code>, <code class="mkapi-object-signature">orig_groups</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(ndarray, ndarray)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Generate a new 1bp BedGraph and keep information of the original
+distribution and sources of data.<a class="mkapi-src-link" href="../source/ecodam_py.bedgraph/#ecodam_py.bedgraph.intervals_to_1bp_mask" title="Source for ecodam_py.bedgraph.intervals_to_1bp_mask">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.bedgraph#ecodam_py.bedgraph.pad_with_zeros">pad_with_zeros</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">nfr</code>, <code class="mkapi-object-signature">chrom</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Adds zero entries for loci which are not included in one of the given
+DFs<a class="mkapi-src-link" href="../source/ecodam_py.bedgraph/#ecodam_py.bedgraph.pad_with_zeros" title="Source for ecodam_py.bedgraph.pad_with_zeros">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.bedgraph#ecodam_py.bedgraph.put_dfs_on_even_grounds">put_dfs_on_even_grounds</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">dfs</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(iterable of DataFrame)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Asserts overlap of all given DataFrames.<a class="mkapi-src-link" href="../source/ecodam_py.bedgraph/#ecodam_py.bedgraph.put_dfs_on_even_grounds" title="Source for ecodam_py.bedgraph.put_dfs_on_even_grounds">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="ecodam_py.parse_gene_coding">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h2 id="ecodam_pyparse_gene_coding" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="#ecodam_py">ecodam_py</a>.</span><span class="mkapi-object-name"><a href="../ecodam_py.parse_gene_coding/#ecodam_py.parse_gene_coding">parse_gene_coding</a></span></h2>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/ecodam_py.parse_gene_coding/#ecodam_py.parse_gene_coding" title="Source for ecodam_py.parse_gene_coding">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>A filteration script written pretty specifically for some GTF file that Gil
+needed to be parsed and filtered.</p>
+<p>It takes about an hour or two to run on the Irys server due to the slow
+iteration step that is performed internally by the gffutils library.</p>
+<p>It also reverses the start and end loci on the rows with the - strand, as seen
+in the find_minus_primer function.</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="ecodam_py.peak_calling">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h2 id="ecodam_pypeak_calling" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="#ecodam_py">ecodam_py</a>.</span><span class="mkapi-object-name"><a href="../ecodam_py.peak_calling/#ecodam_py.peak_calling">peak_calling</a></span></h2>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/ecodam_py.peak_calling/#ecodam_py.peak_calling" title="Source for ecodam_py.peak_calling">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Functions accompanying the 'peak_calling' notebook.</p></div>
+    </div>
+  <div class="mkapi-section functions">
+      <div class="mkapi-section-name functions">
+          <span class="mkapi-section-name-body functions">Functions</span> 
+        </div>
+      <div class="mkapi-section-body functions"><ul class="mkapi-items">
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.peak_calling#ecodam_py.peak_calling.color_peak_surroundings">color_peak_surroundings</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">atac_split</code>, <code class="mkapi-object-signature">atac_indices</code>, <code class="mkapi-object-signature">eco_split</code>, <code class="mkapi-object-signature">eco_indices</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Generate a plot for the peak-centered BedGraphFile data.<a class="mkapi-src-link" href="../source/ecodam_py.peak_calling/#ecodam_py.peak_calling.color_peak_surroundings" title="Source for ecodam_py.peak_calling.color_peak_surroundings">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.peak_calling#ecodam_py.peak_calling.define_peak_surroundings">define_peak_surroundings</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">atac</code>, <code class="mkapi-object-signature">atac_peak_indices</code>, <code class="mkapi-object-signature">eco</code>, <code class="mkapi-object-signature">eco_peak_indices</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Aggregator function to prettify notebook's code.<a class="mkapi-src-link" href="../source/ecodam_py.peak_calling/#ecodam_py.peak_calling.define_peak_surroundings" title="Source for ecodam_py.peak_calling.define_peak_surroundings">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.peak_calling#ecodam_py.peak_calling.preprocess_data">preprocess_data</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">fname</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(BedGraphFile)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A series of simple steps that should be done automatically to BedGraphFile
+data.<a class="mkapi-src-link" href="../source/ecodam_py.peak_calling/#ecodam_py.peak_calling.preprocess_data" title="Source for ecodam_py.peak_calling.preprocess_data">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="ecodam_py.eco_atac_normalization">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h2 id="ecodam_pyeco_atac_normalization" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="#ecodam_py">ecodam_py</a>.</span><span class="mkapi-object-name"><a href="../ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization">eco_atac_normalization</a></span></h2>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization" title="Source for ecodam_py.eco_atac_normalization">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Functions accompanying the 'normalize_eco_atac.ipynb' notebook.</p>
+<p>This is a library-like assortment of functions with no clear start or end, so
+don't expect any logic that can make it seem ordered. Moreover, some of the
+functionality exists in more than one place due to the chaotic way in which
+this project was created.</p></div>
+    </div>
+  <div class="mkapi-section functions">
+      <div class="mkapi-section-name functions">
+          <span class="mkapi-section-name-body functions">Functions</span> 
+        </div>
+      <div class="mkapi-section-body functions"><ul class="mkapi-items">
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.concat_clusters">concat_clusters</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">eco</code>, <code class="mkapi-object-signature">atac</code>, <code class="mkapi-object-signature">clusters</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(DataFrame, DataFrame)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Extracts the data from the 'eco' and 'atac' DFs using the indices in
+'clusters'.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.concat_clusters" title="Source for ecodam_py.eco_atac_normalization.concat_clusters">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.convert_to_intervalindex">convert_to_intervalindex</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">beds</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(List[BedGraphFile])</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Creates an IntervalIndex index for each BedGraphFile in the given list.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.convert_to_intervalindex" title="Source for ecodam_py.eco_atac_normalization.convert_to_intervalindex">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.equalize_distribs">equalize_distribs</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">dfs</code>, <code class="mkapi-object-signature">atac</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Change the data limits of the DFs to match the ATAC one.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.equalize_distribs" title="Source for ecodam_py.eco_atac_normalization.equalize_distribs">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.expand_seeds">expand_seeds</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">data</code>, <code class="mkapi-object-signature">cluster_thresh</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(DataFrame)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Generate a bedgraph-like DF from the given list of seeds.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.expand_seeds" title="Source for ecodam_py.eco_atac_normalization.expand_seeds">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.find_closest_diff">find_closest_diff</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">eco</code>, <code class="mkapi-object-signature">atac</code>, <code class="mkapi-object-signature">thresh</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(Tuple[pd.Series, pd.Series])</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Subtracts the two given tracks and returns them only at the locations
+closer than thresh.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.find_closest_diff" title="Source for ecodam_py.eco_atac_normalization.find_closest_diff">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.generate_df_for_theo_correlation_comparison">generate_df_for_theo_correlation_comparison</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">data</code>, <code class="mkapi-object-signature">theo</code>, <code class="mkapi-object-signature">nquants</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(pd.DataFrame)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Creates a long form dataframe that can be used to show correlation between the
+given theoretical data and some other arbitraty DF.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.generate_df_for_theo_correlation_comparison" title="Source for ecodam_py.eco_atac_normalization.generate_df_for_theo_correlation_comparison">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.generate_intervals_1kb">generate_intervals_1kb</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">data</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(pd.IntervalIndex)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Creates evenly spaced intervals from existing DFs.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.generate_intervals_1kb" title="Source for ecodam_py.eco_atac_normalization.generate_intervals_1kb">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.get_peak_indices">get_peak_indices</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">peaks</code>, <code class="mkapi-object-signature">data</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(ndarray)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Iterate over the peaks and extract the data index at these points.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.get_peak_indices" title="Source for ecodam_py.eco_atac_normalization.get_peak_indices">&lt;/&gt;</a></span></li>
+
+<li class="generator"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.iter_over_bedgraphs_chromosomes">iter_over_bedgraphs_chromosomes</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">*args</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(An iterator that yields a tuple of the DFs only at a certain chromosome)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Constructs an chromosome iterator for each DF in the given args.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.iter_over_bedgraphs_chromosomes" title="Source for ecodam_py.eco_atac_normalization.iter_over_bedgraphs_chromosomes">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.match_histograms">match_histograms</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">eco</code>, <code class="mkapi-object-signature">atac</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Wrapper for the match_histograms scikit-image function<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.match_histograms" title="Source for ecodam_py.eco_atac_normalization.match_histograms">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.normalize_group_peaks_single_factor">normalize_group_peaks_single_factor</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">peaks</code>, <code class="mkapi-object-signature">data</code>, <code class="mkapi-object-signature">norm_to</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Multiplies the given data by some norm factor, or finds that norm factor.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.normalize_group_peaks_single_factor" title="Source for ecodam_py.eco_atac_normalization.normalize_group_peaks_single_factor">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.normalize_with_site_density">normalize_with_site_density</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">chrom</code>, <code class="mkapi-object-signature">naked</code>, <code class="mkapi-object-signature">theo</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(pd.DataFrame, pd.DataFrame, pd.DataFrame)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Use the site density as supplied in the theoretical DF to normalize the
+values in the other two DFs.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.normalize_with_site_density" title="Source for ecodam_py.eco_atac_normalization.normalize_with_site_density">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.plot_bg">plot_bg</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">eco</code>, <code class="mkapi-object-signature">naked</code>, <code class="mkapi-object-signature">atac</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Plots a BedGraphFile's DF<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.plot_bg" title="Source for ecodam_py.eco_atac_normalization.plot_bg">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.prepare_site_density_for_norm">prepare_site_density_for_norm</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">theo</code>, <code class="mkapi-object-signature">quantile</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(blacklist_mask : pd.Series)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Generate a correct theoretical data mask for normalization.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.prepare_site_density_for_norm" title="Source for ecodam_py.eco_atac_normalization.prepare_site_density_for_norm">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.preprocess_bedgraph">preprocess_bedgraph</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">paths</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(List[BedGraphFile])</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Run basic pre-processing for the filenames.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.preprocess_bedgraph" title="Source for ecodam_py.eco_atac_normalization.preprocess_bedgraph">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.put_on_even_grounds">put_on_even_grounds</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">beds</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(List[BedGraphFile])</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Makes sure that the Eco, Naked and ATAC data start and end at
+overlapping areas.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.put_on_even_grounds" title="Source for ecodam_py.eco_atac_normalization.put_on_even_grounds">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.show_ridge_plot">show_ridge_plot</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">df</code>, <code class="mkapi-object-signature">name</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(sns.FacetGrid)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Shows the distribution of the data for different categories.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.show_ridge_plot" title="Source for ecodam_py.eco_atac_normalization.show_ridge_plot">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.subtract_background_with_theo">subtract_background_with_theo</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">data</code>, <code class="mkapi-object-signature">no_sites</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(DataFrame)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Remove background component and zero-information bins
+from the data.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.subtract_background_with_theo" title="Source for ecodam_py.eco_atac_normalization.subtract_background_with_theo">&lt;/&gt;</a></span></li>
+
+<li class="function"><code class="mkapi-item-name"><a href="../ecodam_py.eco_atac_normalization#ecodam_py.eco_atac_normalization.write_intindex_to_disk">write_intindex_to_disk</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">data</code>, <code class="mkapi-object-signature">fname</code>, <code class="mkapi-object-signature">chr_</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Writes the data to disk as a bedgraph.<a class="mkapi-src-link" href="../source/ecodam_py.eco_atac_normalization/#ecodam_py.eco_atac_normalization.write_intindex_to_disk" title="Source for ecodam_py.eco_atac_normalization.write_intindex_to_disk">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="ecodam_py.pybam">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h2 id="ecodam_pypybam" class="mkapi-object-body module top"><span class="mkapi-object-prefix"><a href="#ecodam_py">ecodam_py</a>.</span><span class="mkapi-object-name"><a href="../ecodam_py.pybam/#ecodam_py.pybam">pybam</a></span></h2>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/ecodam_py.pybam/#ecodam_py.pybam" title="Source for ecodam_py.pybam">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Awesome people who have directly contributed to the project:
+Jon Palmer - Bug finder &amp; advice on project direction
+Mahmut Uludag - Bug finder</p>
+<p>Help:       print pybam.wat
+Github:     http://github.com/JohnLonginotto/pybam</p>
+<p>This code was written by John Longinotto, a PhD student of the Pospisilik Lab at the Max Planck Institute of Immunbiology &amp; Epigenetics, Freiburg.
+My PhD is funded by the Deutsches Epigenom Programm (DEEP), and the Max Planck IMPRS Program.
+I study Adipose Biology and Circadian Rhythm in mice, although it seems these days I spend most of my time at the computer :-)</p></div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="../ecodam_py.pybam#ecodam_py.pybam.read">read</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">[ Dynamic Parser Example ]
+for alignment in pybam.read('/my/data.bam'):
+    print alignment.sam_seq<a class="mkapi-src-link" href="../source/ecodam_py.pybam/#ecodam_py.pybam.read" title="Source for ecodam_py.pybam.read">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../ecodam_py.pybam#ecodam_py.pybam.PybamWarn">PybamWarn</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Common base class for all non-exit exceptions.<a class="mkapi-src-link" href="../source/ecodam_py.pybam/#ecodam_py.pybam.PybamWarn" title="Source for ecodam_py.pybam.PybamWarn">&lt;/&gt;</a></span></li>
+
+<li class="class"><code class="mkapi-item-name"><a href="../ecodam_py.pybam#ecodam_py.pybam.PybamError">PybamError</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Common base class for all non-exit exceptions.<a class="mkapi-src-link" href="../source/ecodam_py.pybam/#ecodam_py.pybam.PybamError" title="Source for ecodam_py.pybam.PybamError">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../ecodam_py.bedgraph/" class="btn btn-neutral float-right" title="ecodam_py.bedgraph">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../../BedGraphAccessor/" class="btn btn-neutral" title="BedGraphAccessor"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/ebensteinLab/EcoDAM/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../../BedGraphAccessor/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../ecodam_py.bedgraph/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../js/mkapi.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

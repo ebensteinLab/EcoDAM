@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../../img/favicon.ico">
+  <title>ecodam_py.peak_calling - EcoDAM</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../../css/theme.css" />
+  <link rel="stylesheet" href="../../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css" rel="stylesheet" />
+  <link href="../../../css/mkapi-common.css" rel="stylesheet" />
+  <link href="../../../css/mkapi-readthedocs.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "ecodam_py.peak_calling";
+    var mkdocs_page_input_path = "api/source/ecodam_py.peak_calling.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../../.." class="icon icon-home"> EcoDAM</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">User Guide</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../BedGraphAccessor/">BedGraphAccessor</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">API</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">ecodam_py</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py/">ecodam_py</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.bedgraph/">ecodam_py.bedgraph</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.parse_gene_coding/">ecodam_py.parse_gene_coding</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.compare_ecodam_atac/">ecodam_py.compare_ecodam_atac</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.peak_calling/">ecodam_py.peak_calling</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.eco_atac_normalization/">ecodam_py.eco_atac_normalization</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.pybam/">ecodam_py.pybam</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../ecodam_py.ml_pipeline/">ecodam_py.ml_pipeline</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../tools/">Tools</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../notebooks/">Notebooks</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../about/">About</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../..">EcoDAM</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>ecodam_py.peak_calling</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/ebensteinLab/EcoDAM/edit/master/docs/api/source/ecodam_py.peak_calling.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <div class="mkapi-node">
+<h1 id="" class="mkapi-object mkapi-object-code plain">
+<span class="mkapi-object-kind mkapi-object-kind-code">SOURCE CODE</span>
+<span class="mkapi-object-prefix">ecodam_py.</span><span class="mkapi-object-name">peak_calling</span>
+<span id="ecodam_py.peak_calling"></span><a class="mkapi-docs-link" href="../../ecodam_py.peak_calling">DOCS</a>
+</h1>
+
+<div class="mkapi-code">
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions accompanying the &#39;peak_calling&#39; notebook.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">ecodam_py.bedgraph</span> <span class="kn">import</span> <span class="n">BedGraphFile</span>
+
+
+<span class="k">def</span> <span class="nf">preprocess_data</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BedGraphFile</span><span class="p">:</span><span id="ecodam_py.peak_calling.preprocess_data"></span><a class="mkapi-docs-link" title="ecodam_py.peak_calling.preprocess_data" href="../../ecodam_py.peak_calling/#ecodam_py.peak_calling.preprocess_data">DOCS</a>
+    <span class="sd">&quot;&quot;&quot;A series of simple steps that should be done automatically to BedGraphFile</span>
+<span class="sd">    data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname : pathlib.Path</span>
+<span class="sd">        BedGraphFile filename</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    BedGraphFile</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bed</span> <span class="o">=</span> <span class="n">BedGraphFile</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">bed</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;start_locus&quot;</span><span class="p">)</span>
+    <span class="n">left</span> <span class="o">=</span> <span class="n">bed</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;start_locus&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">right</span> <span class="o">=</span> <span class="n">bed</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;start_locus&quot;</span><span class="p">,</span> <span class="s2">&quot;end_locus&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">IntervalIndex</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">closed</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;locus&quot;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">({</span><span class="s2">&quot;chr&quot;</span><span class="p">:</span> <span class="s2">&quot;chr15&quot;</span><span class="p">,</span> <span class="s2">&quot;intensity&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+    <span class="n">bed</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="k">return</span> <span class="n">bed</span>
+
+
+<span class="k">def</span> <span class="nf">_split_arrays_to_start_ends</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">peak_indices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Splits data into segments centered around the given peak_indices.</span>
+
+<span class="sd">    For each peak, this function return values from data that was located in</span>
+<span class="sd">    [peak_idx - periods, peak_index + (periods + 1)]. The data is returned</span>
+<span class="sd">    as one continguous array, i.e. the distant peaks are concatenated together.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : np.ndarray</span>
+<span class="sd">        Data to segment</span>
+<span class="sd">    peak_indices : np.ndarray</span>
+<span class="sd">        Center of segments to cut from data</span>
+<span class="sd">    periods : int</span>
+<span class="sd">        Number of indices to add before and after</span>
+<span class="sd">        the index of the peak</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        A concatenated array of the surrounding area around all given peaks</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">left</span> <span class="o">=</span> <span class="n">peak_indices</span> <span class="o">-</span> <span class="n">periods</span>
+    <span class="n">left</span><span class="p">[</span><span class="n">left</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">right</span> <span class="o">=</span> <span class="n">peak_indices</span> <span class="o">+</span> <span class="p">(</span><span class="n">periods</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">right</span><span class="p">[</span><span class="n">right</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+    <span class="n">all_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">])</span>
+    <span class="n">all_</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">all_</span><span class="p">)[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">define_peak_surroundings</span><span class="p">(</span><span id="ecodam_py.peak_calling.define_peak_surroundings"></span><a class="mkapi-docs-link" title="ecodam_py.peak_calling.define_peak_surroundings" href="../../ecodam_py.peak_calling/#ecodam_py.peak_calling.define_peak_surroundings">DOCS</a>
+    <span class="n">atac</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">atac_peak_indices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">eco</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">eco_peak_indices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Aggregator function to prettify notebook&#39;s code.</span>
+
+<span class="sd">    The function merely calls a different one for all relevant data that</span>
+<span class="sd">    should be displayed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">atac_split</span> <span class="o">=</span> <span class="n">_split_arrays_to_start_ends</span><span class="p">(</span>
+        <span class="n">atac</span><span class="o">.</span><span class="n">intensity</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">atac_peak_indices</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">3</span>
+    <span class="p">)</span>
+    <span class="n">atac_indices</span> <span class="o">=</span> <span class="n">_split_arrays_to_start_ends</span><span class="p">(</span>
+        <span class="n">atac</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">mid</span><span class="p">,</span> <span class="n">atac_peak_indices</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">3</span>
+    <span class="p">)</span>
+    <span class="n">eco_split</span> <span class="o">=</span> <span class="n">_split_arrays_to_start_ends</span><span class="p">(</span>
+        <span class="n">eco</span><span class="o">.</span><span class="n">intensity</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">eco_peak_indices</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">3</span>
+    <span class="p">)</span>
+    <span class="n">eco_indices</span> <span class="o">=</span> <span class="n">_split_arrays_to_start_ends</span><span class="p">(</span>
+        <span class="n">eco</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">mid</span><span class="p">,</span> <span class="n">eco_peak_indices</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">3</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">atac_split</span><span class="p">,</span> <span class="n">atac_indices</span><span class="p">,</span> <span class="n">eco_split</span><span class="p">,</span> <span class="n">eco_indices</span>
+
+
+<span class="k">def</span> <span class="nf">color_peak_surroundings</span><span class="p">(</span><span id="ecodam_py.peak_calling.color_peak_surroundings"></span><a class="mkapi-docs-link" title="ecodam_py.peak_calling.color_peak_surroundings" href="../../ecodam_py.peak_calling/#ecodam_py.peak_calling.color_peak_surroundings">DOCS</a>
+    <span class="n">atac_split</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">atac_indices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">eco_split</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">eco_indices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate a plot for the peak-centered BedGraphFile data.</span>
+
+<span class="sd">    The resulting plot is a barplot that overlays the Eco and ATAC data on the</span>
+<span class="sd">    same coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">atac_indices</span><span class="p">,</span> <span class="n">atac_split</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;ATAC&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">eco_indices</span><span class="p">,</span> <span class="n">eco_split</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;EcoDAM&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+</div>
+</div>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/ebensteinLab/EcoDAM/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+      
+    </span>
+</div>
+    <script>var base_url = '../../..';</script>
+    <script src="../../../js/theme.js" defer></script>
+      <script src="../../../js/mkapi.js" defer></script>
+      <script src="../../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
