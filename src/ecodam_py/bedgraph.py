@@ -56,7 +56,7 @@ class BedGraphAccessor:
         obj = self._obj.copy()
         obj.loc[:, "start_locus"] = obj.index.left
         obj.loc[:, "end_locus"] = obj.index.right
-        obj = obj.reset_index().drop("locus", axis=1)
+        obj = obj.reset_index().drop("locus", axis=1)[["chr", "start_locus", "end_locus", "intensity"]]
         return obj
 
     def columns_to_index(self) -> pd.DataFrame:
@@ -342,13 +342,46 @@ def put_dfs_on_even_grounds(dfs: Iterable[pd.DataFrame]) -> Iterable[pd.DataFram
     return new_dfs
 
 
+#: A unique return type for equalize_loci
 Equalized = namedtuple("Equalized", "even at_1bp groups")
 
 
 def equalize_loci(
     first: pd.DataFrame, second: pd.DataFrame
 ) -> Tuple[Equalized, Equalized]:
+    """
+    Generate an approximately-equal loci DFs from the two given ones.
+
+    This function is a mini-pipeline designed to bring two DFs to have the same
+    loci. It works great with a small caveat - the returned 'even' DFs might
+    have 'holes' that aren't covered by any loci. In other words, the loci of
+    the DFs don't necessarily populate all of the loci from the starting point
+    to the ending one. Again, this is only relevant to the 'even' entry, the
+    1bp resolution copy obviously does cover all BP.
+
+    Parameters
+    ----------
+    first, second : pd.DataFrame
+        Two DFs that have to be equalized
+
+    Returns
+    -------
+    (Equalized, Equalized)
+        An even variant (same as the original but only with relevant loci)
+        and 1 bp resolution version with the groups (original loci) marked
+
+    Raises
+    ------
+    RuntimeError
+        If the DFs cannot be coerced to have the same loci
+    """
+    first = first.sort_values('start_locus')
+    first = first.drop_duplicates(['start_locus', 'end_locus']).astype({'start_locus': np.uint64, 'end_locus': np.uint64})
+    second = second.sort_values('start_locus')
+    second = second.drop_duplicates(['start_locus', 'end_locus']).astype({'start_locus': np.uint64, 'end_locus': np.uint64})
     self_even, other_even = put_dfs_on_even_grounds([first, second])
+    if len(self_even) == 0 or len(other_even) == 0:
+        raise RuntimeError("No intersection possible between the two DFs")
     self_even, other_even = pad_with_zeros(self_even, other_even)
     self_at_1bp, self_groups = intervals_to_1bp_mask(
         self_even.start_locus.to_numpy(),
